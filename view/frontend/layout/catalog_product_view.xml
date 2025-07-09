@@ -2,13 +2,18 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <css src="Gundo_ProductInfoAgent::css/style.css"/>
+        <css src="Gundo_ProductInfoAgent::css/chat-enhanced.css"/>
     </head>
     <body>
 <!--        <move element="product.info.details" destination="product.info.main" after="product_options_wrapper_bottom"/>-->
         <referenceContainer name="product.info.main">
             <block class="Gundo\ProductInfoAgent\Block\Chat"
-                   name="chat_assistant_block"
-                   template="Gundo_ProductInfoAgent::chat.phtml" />
+                   name="productinfoagent.chat"
+                   template="Gundo_ProductInfoAgent::chat.phtml">
+                <arguments>
+                    <argument name="cache_lifetime" xsi:type="number">0</argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

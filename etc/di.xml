@@ -2,6 +2,9 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Gundo\ProductInfoAgent\Api\ChatInterface" type="Gundo\ProductInfoAgent\Model\Chat"/>
+    <preference for="Gundo\ProductInfoAgent\Api\ChatFeedbackInterface" type="Gundo\ProductInfoAgent\Model\ChatFeedback"/>
+    <preference for="Gundo\ProductInfoAgent\Api\SuggestionInterface" type="Gundo\ProductInfoAgent\Model\Suggestion"/>
+    <preference for="Gundo\ProductInfoAgent\Api\VoiceInterface" type="Gundo\ProductInfoAgent\Model\Voice"/>
 
     <type name="Gundo\ProductInfoAgent\Logger\Logger">
         <arguments>
@@ -16,9 +19,16 @@
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="gundo_productinfoagent_module_test" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\ModuleTest</item>
-                <item name="gundo_productinfoagent_module_test_create" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\ModuleTestCreate</item>
+                <item name="gundo_productinfoagent_moduletest" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\ModuleTest</item>
+                <item name="gundo_productinfoagent_moduletestcreate" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\ModuleTestCreate</item>
+                <item name="gundo_productinfoagent_generatesuggestions" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\GenerateSuggestions</item>
+                <item name="gundo_productinfoagent_testvoice" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\TestVoice</item>
+                <item name="gundo_productinfoagent_audioplayer" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\AudioPlayer</item>
+                <item name="gundo_productinfoagent_voicedocker" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\VoiceDocker</item>
+                <item name="gundo_productinfoagent_testsmartsuggestions" xsi:type="object">Gundo\ProductInfoAgent\Console\Command\TestSmartSuggestions</item>
             </argument>
         </arguments>
     </type>
+
+
 </config>

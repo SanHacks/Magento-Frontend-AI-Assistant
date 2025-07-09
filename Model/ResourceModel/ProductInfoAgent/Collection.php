@@ -36,4 +36,12 @@ class Collection extends AbstractCollection
     {
         return $this->getItemById($id) ?: null;
     }
+
+    /**
+     * @return Collection|null
+     */
+    public function getCollection(): ?Collection
+    {
+        return $this->load() ?: null;
+    }
 }

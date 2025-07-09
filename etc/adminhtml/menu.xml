@@ -10,12 +10,22 @@
             sortOrder="40"
         />
         <add
-            id="Gundo_ProductInfoAgent::chathistory"
-            title="Product Agent Chat History"
+            id="Gundo_ProductInfoAgent::dashboard"
+            title="Dashboard"
             module="Gundo_ProductInfoAgent"
-            resource="Gundo_ProductInfoAgento::chathistory"
+            resource="Gundo_ProductInfoAgent::productinfoagent"
             action="productinfoagent/productinfoagent/index"
             parent="Gundo_ProductInfoAgent::productinfoagent_menu"
+            sortOrder="10"
+        />
+        <add
+            id="Gundo_ProductInfoAgent::productinfoagent_history"
+            title="Chat History"
+            module="Gundo_ProductInfoAgent"
+            resource="Gundo_ProductInfoAgent::productinfoagent"
+            action="productinfoagent/productinfoagent/history"
+            parent="Gundo_ProductInfoAgent::productinfoagent_menu"
+            sortOrder="20"
         />
     </menu>
 </config>

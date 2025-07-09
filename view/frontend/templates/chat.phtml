@@ -3,126 +3,1075 @@
 
 use Gundo\ProductInfoAgent\Block\Chat;
 
-$product = $block->getCurrentProduct();
-$productName = $product ? $product->getName() : 'Product';
-$productId = $product ? $product->getId() : 0;
-$baseUrl = $block->agentEndpoint();
-$userId = $block->getCustomer();
-
+try {
+    $product = $block->getCurrentProduct();
+    $productId = $product ? $product->getId() : 0;
+    $userId = $block->getCustomer();
+    $suggestionUrl = $block->getBaseUrl() . 'rest/V1/productinfoagent/suggestions/' . $productId;
+    $voiceEnabled = $block->isVoiceEnabled();
+    $voiceUrl = $block->getVoiceEndpoint();
+    $voiceAutoPlay = $block->isAutoPlayVoiceEnabled();
+    $voiceLoadingMessage = $block->getVoiceLoadingMessage();
+    $voiceReadyMessage = $block->getVoiceReadyMessage();
+    $themeColors = $block->getThemeColors();
+    $themeEnabled = $block->isThemeAdaptationEnabled();
+    $isUserLoggedIn = $block->isUserLoggedIn();
+    $autoVoiceForLoggedUsers = $block->isAutoVoiceForLoggedUsersEnabled();
+    $smartRotationEnabled = $block->isSmartRotationEnabled();
+    $suggestionsPerLoad = $block->getSuggestionsPerLoad();
+    $shouldDisplayChat = $block->shouldDisplayChat();
+    $conversationPersistence = $block->isConversationPersistenceEnabled();
+    $persistenceDuration = $block->getPersistenceDuration();
+    $currentPageType = $block->getCurrentPageType();
+    $pageIdentifier = $block->getCurrentPageIdentifier();
+    $chatDisplayMode = $block->getChatDisplayMode();
+} catch (\Exception $e) {
+    // If there's an error, don't display the chat
+    $shouldDisplayChat = false;
+    $conversationPersistence = false;
+    $persistenceDuration = 24;
+    $currentPageType = 'unknown';
+    $pageIdentifier = 'error';
+    error_log('ProductInfoAgent Chat Block Error: ' . $e->getMessage());
+}
 ?>
 
+<!-- Include Material Design Icons and Font Awesome -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<div class="chat-container">
+<?php if ($themeEnabled && !empty($themeColors)): ?>
+<style id="chat-theme-styles">
+    .chat-container {
+        border-color: <?= $block->escapeHtml($themeColors['chatContainerBorderColor']) ?> !important;
+    }
+    .user {
+        background-color: <?= $block->escapeHtml($themeColors['userMessageColor']) ?> !important;
+    }
+    .assistant {
+        background-color: <?= $block->escapeHtml($themeColors['assistantMessageColor']) ?> !important;
+    }
+    .send-button {
+        background-color: <?= $block->escapeHtml($themeColors['sendButtonColor']) ?> !important;
+    }
+    .send-button:hover {
+        background-color: <?= $block->escapeHtml($themeColors['sendButtonColor']) ?>CC !important;
+    }
+</style>
+<?php endif; ?>
+
+<?php if (isset($shouldDisplayChat) && $shouldDisplayChat): ?>
+<div id="chat-container" class="chat-container">
+    <div class="chat-header">
+        <span><i class="material-icons">chat</i> Chat with an Assistant</span>
+        <button id="popout-button" class="popout-button" title="Pop-out Chat">
+            <i class="material-icons">open_in_new</i>
+        </button>
+    </div>
     <div id="chat-box" class="chat-box">
-        <!-- Chat messages-->
+        <!-- Chat messages will appear here -->
     </div>
 
-    <div class="suggested-questions">
-
-        <button onclick="sendSuggestedQuestion('Tell me about this product?')">Tell me about this product?</button>
-        <button onclick="sendSuggestedQuestion('What are the features?')">What are the features?</button>
-        <button onclick="sendSuggestedQuestion('What complements this product?')">What complements this product?</button>
-        <button onclick="sendSuggestedQuestion('Correct Usage of this?')">Correct Usage of this?</button>
+    <div id="suggested-questions" class="suggested-questions">
+        <!-- Suggested questions will be loaded here -->
     </div>
 
     <div class="chat-input-container">
-        <input type="text" id="user-input" placeholder="Type your message..." class="chat-input">
-        <button onclick="sendMessage()" class="send-button">Send</button>
+        <div class="input-controls">
+            <button id="image-upload-btn" class="control-btn" title="Upload Image" <?= !$block->isImageProcessingEnabled() ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '' ?>>
+                <i class="material-icons">image</i>
+            </button>
+            <button id="voice-record-btn" class="control-btn" title="Record Voice" <?= !$voiceEnabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '' ?>>
+                <i class="material-icons">mic</i>
+            </button>
+            <input type="file" id="image-input" accept="image/*" style="display: none;">
+        </div>
+        <input type="text" id="user-input" placeholder="Type your message, record voice, or upload an image..." class="chat-input">
+        <button id="send-button" class="send-button">
+            <i class="material-icons">send</i>
+        </button>
+    </div>
+    
+    <!-- Image Processing Modal -->
+    <div id="image-modal" class="image-modal" style="display: none;">
+        <div class="image-modal-content">
+            <div class="image-modal-header">
+                <h3><i class="material-icons">image</i> Process Image with AI</h3>
+                <button id="close-image-modal" class="close-btn">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="image-preview-container">
+                <img id="image-preview" src="" alt="Image preview">
+            </div>
+            <div class="image-controls">
+                <div class="prompt-suggestions">
+                    <h4>Quick Suggestions:</h4>
+                    <div class="suggestion-buttons">
+                        <button type="button" class="suggestion-btn" onclick="document.getElementById('image-prompt').value = 'Remove the background from this image'">Remove Background</button>
+                        <button type="button" class="suggestion-btn" onclick="document.getElementById('image-prompt').value = 'Change the color of this item to blue'">Change Color</button>
+                        <button type="button" class="suggestion-btn" onclick="document.getElementById('image-prompt').value = 'Make this image more professional looking'">Enhance Quality</button>
+                        <button type="button" class="suggestion-btn" onclick="document.getElementById('image-prompt').value = 'Show how this would look in a modern room'">Room Mockup</button>
+                    </div>
+                </div>
+                <textarea id="image-prompt" placeholder="Describe how you want to edit this image..." rows="3"></textarea>
+                <div class="image-actions">
+                    <button id="analyze-image-btn" class="analyze-btn">
+                        <i class="material-icons">visibility</i> Analyze Image
+                    </button>
+                    <button id="process-image-btn" class="process-btn">
+                        <i class="material-icons">edit</i> Process Image
+                    </button>
+                    <button id="generate-image-btn" class="generate-btn">
+                        <i class="material-icons">auto_fix_high</i> Generate New Image
+                    </button>
+                </div>
+            </div>
+            <div id="image-results" class="image-results"></div>
+        </div>
+    </div>
+    
+    <!-- Voice Recording Modal -->
+    <div id="voice-modal" class="voice-modal" style="display: none;">
+        <div class="voice-modal-content">
+            <div class="voice-modal-header">
+                <h3><i class="material-icons">mic</i> Voice Recording</h3>
+                <button id="close-voice-modal" class="close-btn">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="voice-controls">
+                <button id="start-recording" class="voice-control-btn">
+                    <i class="material-icons">mic</i> Start Recording
+                </button>
+                <button id="stop-recording" class="voice-control-btn" disabled>
+                    <i class="material-icons">stop</i> Stop Recording
+                </button>
+                <button id="play-recording" class="voice-control-btn" disabled>
+                    <i class="material-icons">play_arrow</i> Play Recording
+                </button>
+            </div>
+            <div class="voice-status">
+                <div id="recording-status">Ready to record</div>
+                <div id="recording-timer">00:00</div>
+            </div>
+            <div class="voice-actions">
+                <button id="send-voice-btn" class="send-voice-btn" disabled>
+                    <i class="material-icons">send</i> Send Voice Message
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="resize-handle" class="resize-handle">
+        <i class="material-icons">drag_indicator</i>
     </div>
 </div>
 
 <script>
-const chatBox = document.getElementById('chat-box');
-const chatUrl = <?= $baseUrl ?> ;
-const currentUser = <?= $userId ?>;
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatContainer = document.getElementById('chat-container');
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const popoutButton = document.getElementById('popout-button');
+        const suggestedQuestionsContainer = document.getElementById('suggested-questions');
+        const resizeHandle = document.getElementById('resize-handle');
 
-alert(chatUrl);
-/**
- * @param sender
- * @param message
- */
-function appendMessage(sender, message) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message', sender);
-    chatBox.appendChild(messageElement);
+        const productId = <?= json_encode($productId) ?>;
+        const chatUrl = '<?= $block->escapeUrl($block->agentEndpoint()) ?>';
+        const liveChatUrl = '<?= $block->escapeUrl($block->getBaseUrl() . 'productinfoagent/chat/live') ?>';
+        const voiceRecordUrl = '<?= $block->escapeUrl($block->getBaseUrl() . 'productinfoagent/voice/record') ?>';
+        const imageProcessUrl = '<?= $block->escapeUrl($block->getBaseUrl() . 'productinfoagent/image/process') ?>';
+        const feedbackUrl = '<?= $block->escapeUrl($block->getBaseUrl() . 'rest/V1/productinfoagent/feedback') ?>';
+        const suggestionUrl = '<?= $block->escapeUrl($suggestionUrl) ?>';
+        const voiceUrl = '<?= $block->escapeUrl($voiceUrl) ?>';
+        const voiceEnabled = <?= json_encode($voiceEnabled) ?>;
+        const imageProcessingEnabled = <?= json_encode($block->isImageProcessingEnabled()) ?>;
+        const voiceAutoPlay = <?= json_encode($voiceAutoPlay) ?>;
+        const voiceLoadingMessage = <?= json_encode($voiceLoadingMessage) ?>;
+        const voiceReadyMessage = <?= json_encode($voiceReadyMessage) ?>;
+        const currentUser = <?= json_encode($userId) ?>;
+        const isUserLoggedIn = <?= json_encode($isUserLoggedIn) ?>;
+        const autoVoiceForLoggedUsers = <?= json_encode($autoVoiceForLoggedUsers) ?>;
+        const smartRotationEnabled = <?= json_encode($smartRotationEnabled) ?>;
+        const suggestionsPerLoad = <?= json_encode($suggestionsPerLoad) ?>;
+        const conversationPersistence = <?= json_encode($conversationPersistence) ?>;
+        const persistenceDuration = <?= json_encode($persistenceDuration) ?>;
+        const currentPageType = <?= json_encode($currentPageType) ?>;
+        const pageIdentifier = <?= json_encode($pageIdentifier) ?>;
+        const chatDisplayMode = <?= json_encode($chatDisplayMode) ?>;
+        let sessionId = sessionStorage.getItem('chatSessionId') || `sess_${Date.now()}`;
+        sessionStorage.setItem('chatSessionId', sessionId);
 
-    if (sender === 'assistant') {
-        streamMessage(message, messageElement);
-    } else {
-        messageElement.textContent = message;
-    }
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-/**
- * @param text
- * @param element
- */
-function streamMessage(text, element) {
-    let index = 0;
-
-    const interval = setInterval(() => {
-        if (index < text.length) {
-            element.textContent += text[index];
-            index++;
-            chatBox.scrollTop = chatBox.scrollHeight;
+        // Enhanced conversation state management
+        const storageKey = conversationPersistence ? 
+            'chatState_global_' + currentUser : 
+            'chatState_' + pageIdentifier;
+        
+        let chatState = {};
+        let originalParent = null;
+        let questionsLoaded = false;
+        
+        if (conversationPersistence) {
+            // Try to load from localStorage for persistence across pages
+            const storedState = localStorage.getItem(storageKey);
+            if (storedState) {
+                try {
+                    const parsedState = JSON.parse(storedState);
+                    const now = Date.now();
+                    const maxAge = persistenceDuration * 60 * 60 * 1000; // Convert hours to milliseconds
+                    
+                    if (parsedState.lastActiveTime && (now - parsedState.lastActiveTime) < maxAge) {
+                        chatState = parsedState;
+                    } else {
+                        // Expired conversation
+                        localStorage.removeItem(storageKey);
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse stored chat state:', e);
+                    localStorage.removeItem(storageKey);
+                }
+            }
         } else {
-            clearInterval(interval);
+            // Use sessionStorage for page-specific conversations
+            const storedState = sessionStorage.getItem(storageKey);
+            if (storedState) {
+                try {
+                    chatState = JSON.parse(storedState);
+                } catch (e) {
+                    console.warn('Failed to parse session chat state:', e);
+                    sessionStorage.removeItem(storageKey);
+                }
+            }
         }
-    }, 40);
-}
 
-const productId = <?= json_encode($productId) ?>;
+        // Initialize default state if not loaded - ALWAYS DEFAULT TO EMBEDDED
+        if (!chatState.history) {
+            chatState = {
+                poppedOut: false, // Always start embedded
+                history: [],
+                interactionCount: 0,
+                lastActiveTime: Date.now(),
+                pageType: currentPageType,
+                pageIdentifier: pageIdentifier,
+                suggestionsLoaded: false
+            };
+        } else {
+            // Force embedded state on page load to prevent auto-popout
+            chatState.poppedOut = false;
+        }
 
-/**
- * @returns {Promise<void>}
- */
-async function sendMessage() {
-    const userInput = document.getElementById('user-input').value;
-    if (!userInput.trim()) return;
+        // Store original parent for returning from popout
+        originalParent = chatContainer.parentElement;
 
-    appendMessage('user', userInput);
-    document.getElementById('user-input').value = '';
+        function initializeChat() {
+            // Always start in embedded mode
+            chatContainer.classList.remove('popped-out');
+            if (chatState.history && chatState.history.length > 0) {
+                loadChatHistory();
+            }
+            
+            // Only fetch suggestions if not already loaded for this session
+            if (!chatState.suggestionsLoaded) {
+                fetchSuggestedQuestions();
+                chatState.suggestionsLoaded = true;
+                saveChatState();
+            }
+        }
 
-    const loadingMessage = document.createElement('div');
-    loadingMessage.classList.add('message', 'assistant');
-    loadingMessage.innerHTML = '<span class="loading">thinking...</span>';
-    chatBox.appendChild(loadingMessage);
+        function appendMessage(sender, message, chatId = null) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            
+            if (sender === 'assistant') {
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageElement.appendChild(messageContent);
+                
+                // Add voice button if voice is enabled
+                if (voiceEnabled) {
+                    const voiceButton = document.createElement('button');
+                    voiceButton.innerHTML = '<i class="material-icons">volume_up</i> Play Voice';
+                    voiceButton.className = 'voice-btn';
+                    voiceButton.title = 'Listen to response';
+                    voiceButton.onclick = () => playVoice(message, chatId, voiceButton);
+                    messageElement.appendChild(voiceButton);
+                }
+                
+                streamMessage(message, messageContent, () => {
+                    // Auto-play voice after message is fully streamed
+                    // Check if voice should auto-play based on settings and user status
+                    const shouldAutoPlay = voiceEnabled && (
+                        voiceAutoPlay || 
+                        (isUserLoggedIn && autoVoiceForLoggedUsers)
+                    );
+                    
+                    if (shouldAutoPlay) {
+                        const voiceButton = messageElement.querySelector('.voice-btn');
+                        if (voiceButton) {
+                            playVoice(message, chatId, voiceButton);
+                        }
+                    }
+                });
+                
+                if (chatId) {
+                    addFeedbackButtons(messageElement, chatId);
+                }
+            } else {
+                messageElement.textContent = message;
+            }
+            
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
-    try {
-        const response = await fetch(chatUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'referer': chatUrl
-            },
-            body: JSON.stringify({
-                message: userInput,
-                productId: productId,
-                // customerId: currentUser
-            }),
+            // Update session state
+            chatState.interactionCount++;
+            chatState.lastActiveTime = Date.now();
+            
+            // Always track history regardless of popout state
+            chatState.history.push({ sender, message, chatId, timestamp: Date.now() });
+            saveChatState();
+        }
+
+        function saveChatState() {
+            chatState.lastActiveTime = Date.now();
+            
+            if (conversationPersistence) {
+                localStorage.setItem(storageKey, JSON.stringify(chatState));
+            } else {
+                sessionStorage.setItem(storageKey, JSON.stringify(chatState));
+            }
+        }
+
+        function streamMessage(text, element, callback) {
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < text.length) {
+                    element.textContent += text[index];
+                    index++;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                } else {
+                    clearInterval(interval);
+                    if (callback) callback();
+                }
+            }, 40);
+        }
+
+        function addFeedbackButtons(messageElement, chatId) {
+            const feedbackContainer = document.createElement('div');
+            feedbackContainer.className = 'feedback-buttons';
+            
+            const thumbsUp = document.createElement('button');
+            thumbsUp.innerHTML = '<i class="material-icons">thumb_up</i>';
+            thumbsUp.className = 'feedback-btn positive';
+            thumbsUp.onclick = () => submitFeedback(chatId, 1, thumbsUp);
+            
+            const thumbsDown = document.createElement('button');
+            thumbsDown.innerHTML = '<i class="material-icons">thumb_down</i>';
+            thumbsDown.className = 'feedback-btn negative';
+            thumbsDown.onclick = () => submitFeedback(chatId, 0, thumbsDown);
+            
+            feedbackContainer.appendChild(thumbsUp);
+            feedbackContainer.appendChild(thumbsDown);
+            messageElement.appendChild(feedbackContainer);
+        }
+
+        async function submitFeedback(chatId, feedback, button) {
+            try {
+                const response = await fetch(feedbackUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chatId, feedback })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    button.style.color = feedback === 1 ? '#4CAF50' : '#f44336';
+                    button.disabled = true;
+                    // Disable the other feedback button
+                    const otherButton = button.parentElement.querySelector('.feedback-btn:not(:disabled)');
+                    if (otherButton) {
+                        otherButton.disabled = true;
+                        otherButton.style.opacity = '0.5';
+                    }
+                }
+            } catch (error) {
+                console.error('Feedback submission error:', error);
+            }
+        }
+
+        async function playVoice(text, chatId, button) {
+            if (!voiceEnabled) return;
+            
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="material-icons">hourglass_empty</i> Generating...';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch(voiceUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        productId: productId,
+                        sessionId: sessionId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.audio_data) {
+                    const audioBlob = new Blob([Uint8Array.from(atob(data.audio_data), c => c.charCodeAt(0))], { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    button.innerHTML = '<i class="material-icons">volume_up</i> Playing...';
+                    
+                    audio.onended = () => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    
+                    audio.onerror = () => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    
+                    audio.play();
+                } else {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    console.error('Voice generation failed:', data.error);
+                }
+            } catch (error) {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                console.error('Voice playback error:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const messageText = userInput.value.trim();
+            if (!messageText) return;
+
+            appendMessage('user', messageText);
+            userInput.value = '';
+
+            const loadingMessage = document.createElement('div');
+            loadingMessage.classList.add('message', 'assistant', 'loading-container');
+            loadingMessage.innerHTML = '<span class="loading"><i class="material-icons spinning">autorenew</i> thinking...</span>';
+            chatBox.appendChild(loadingMessage);
+
+            try {
+                const requestData = {
+                    message: messageText,
+                    productId,
+                    customerId: currentUser,
+                    sessionId,
+                    interactionSequence: chatState.interactionCount + 1,
+                    pageUrl: window.location.href,
+                    userAgent: navigator.userAgent
+                };
+
+                const response = await fetch(chatUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData),
+                });
+                const data = await response.json();
+                chatBox.removeChild(loadingMessage);
+
+                const responseData = (Array.isArray(data) && data.length > 0) ? data[0] : null;
+
+                if (responseData && !responseData.error) {
+                    appendMessage('assistant', responseData.message, responseData.chat_id);
+                } else {
+                    appendMessage('assistant', "I couldn't find an answer to that question.");
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                chatBox.removeChild(loadingMessage);
+                appendMessage('assistant', 'There was an issue processing your request.');
+            }
+        }
+        
+        async function fetchSuggestedQuestions() {
+            try {
+                const response = await fetch(suggestionUrl);
+                const questions = await response.json();
+                suggestedQuestionsContainer.innerHTML = '';
+                
+                questions.forEach(q => {
+                    const button = document.createElement('button');
+                    button.className = 'suggestion-item';
+                    button.innerHTML = `<i class="material-icons">help_outline</i> ${q}`;
+                    button.onclick = () => sendSuggestedQuestion(q);
+                    suggestedQuestionsContainer.appendChild(button);
+                });
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+            }
+        }
+
+        function sendSuggestedQuestion(question) {
+            userInput.value = question;
+            sendMessage();
+        }
+
+        function popoutChat() {
+            chatState.poppedOut = !chatState.poppedOut;
+            
+            if (chatState.poppedOut) {
+                // Move to body and add popout class
+                document.body.appendChild(chatContainer);
+                chatContainer.classList.add('popped-out');
+                
+                // Update popout button
+                const popoutIcon = popoutButton.querySelector('i');
+                popoutIcon.textContent = 'close_fullscreen';
+                popoutButton.title = 'Embed Chat';
+                
+                // Load history without duplicating suggestions
+                if (chatState.history && chatState.history.length > 0) {
+                    chatBox.innerHTML = '';
+                    chatState.history.forEach(msg => {
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('message', msg.sender);
+                        messageElement.textContent = msg.message;
+                        chatBox.appendChild(messageElement);
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            } else {
+                // Return to original parent
+                if (originalParent) {
+                    originalParent.appendChild(chatContainer);
+                }
+                chatContainer.classList.remove('popped-out');
+                
+                // Update popout button
+                const popoutIcon = popoutButton.querySelector('i');
+                popoutIcon.textContent = 'open_in_new';
+                popoutButton.title = 'Pop-out Chat';
+            }
+            
+            saveChatState();
+        }
+
+        function loadChatHistory() {
+            chatBox.innerHTML = '';
+            chatState.history.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', msg.sender);
+                
+                if (msg.sender === 'assistant') {
+                    const messageContent = document.createElement('div');
+                    messageContent.className = 'message-content';
+                    messageContent.textContent = msg.message;
+                    messageElement.appendChild(messageContent);
+                    
+                    if (voiceEnabled) {
+                        const voiceButton = document.createElement('button');
+                        voiceButton.innerHTML = '<i class="material-icons">volume_up</i> Play Voice';
+                        voiceButton.className = 'voice-btn';
+                        voiceButton.onclick = () => playVoice(msg.message, msg.chatId, voiceButton);
+                        messageElement.appendChild(voiceButton);
+                    }
+                    
+                    if (msg.chatId) {
+                        addFeedbackButtons(messageElement, msg.chatId);
+                    }
+                } else {
+                    messageElement.textContent = msg.message;
+                }
+                
+                chatBox.appendChild(messageElement);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Event Listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        popoutButton.addEventListener('click', function() {
+            if (chatDisplayMode === 'nochange') {
+                popoutChat();
+            }
+        });
+        
+        // Resizing logic
+        let isResizing = false;
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+            });
         });
 
-        const data = await response.json();
-        chatBox.removeChild(loadingMessage);
+        function handleMouseMove(e) {
+            if (!isResizing) return;
+            const newWidth = document.documentElement.clientWidth - e.clientX;
+            const newHeight = document.documentElement.clientHeight - e.clientY;
+            chatContainer.style.width = `${newWidth}px`;
+            chatContainer.style.height = `${newHeight}px`;
+        }
 
-        const responseMessage = data || "I couldn't find an answer to that question.";
-        appendMessage('assistant', responseMessage);
+        // Voice Recording Functionality
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordingTimer;
+        let recordingSeconds = 0;
+        let recordedAudioBlob = null;
 
-    } catch (error) {
-        console.error('Error:', error);
-        chatBox.removeChild(loadingMessage);
-        appendMessage('assistant', 'There was an issue processing your request. Please try again.');
-    }
-}
+        const voiceModal = document.getElementById('voice-modal');
+        const voiceRecordBtn = document.getElementById('voice-record-btn');
+        const closeVoiceModal = document.getElementById('close-voice-modal');
+        const startRecording = document.getElementById('start-recording');
+        const stopRecording = document.getElementById('stop-recording');
+        const playRecording = document.getElementById('play-recording');
+        const sendVoiceBtn = document.getElementById('send-voice-btn');
+        const recordingStatus = document.getElementById('recording-status');
+        const recordingTimerEl = document.getElementById('recording-timer');
 
+        // Image Processing Functionality
+        const imageModal = document.getElementById('image-modal');
+        const imageUploadBtn = document.getElementById('image-upload-btn');
+        const imageInput = document.getElementById('image-input');
+        const closeImageModal = document.getElementById('close-image-modal');
+        const imagePreview = document.getElementById('image-preview');
+        const imagePrompt = document.getElementById('image-prompt');
+        const analyzeImageBtn = document.getElementById('analyze-image-btn');
+        const processImageBtn = document.getElementById('process-image-btn');
+        const generateImageBtn = document.getElementById('generate-image-btn');
+        const imageResults = document.getElementById('image-results');
+        let selectedImageFile = null;
 
-/**
- * @param question
- */
-function sendSuggestedQuestion(question) {
-    document.getElementById('user-input').value = question;
-    sendMessage();
-}
+        // Voice Recording Event Listeners
+        if (voiceEnabled) {
+            voiceRecordBtn.addEventListener('click', openVoiceModal);
+            closeVoiceModal.addEventListener('click', closeVoiceModalFunc);
+            startRecording.addEventListener('click', startVoiceRecording);
+            stopRecording.addEventListener('click', stopVoiceRecording);
+            playRecording.addEventListener('click', playRecordedAudio);
+            sendVoiceBtn.addEventListener('click', sendVoiceMessage);
+        }
+
+        // Image Processing Event Listeners
+        if (imageProcessingEnabled) {
+            imageUploadBtn.addEventListener('click', () => imageInput.click());
+            imageInput.addEventListener('change', handleImageUpload);
+            closeImageModal.addEventListener('click', closeImageModalFunc);
+            analyzeImageBtn.addEventListener('click', analyzeImage);
+            processImageBtn.addEventListener('click', processImage);
+            processImageBtn.addEventListener('click', generateImage);
+        }
+
+        function openVoiceModal() {
+            voiceModal.style.display = 'flex';
+            resetVoiceModal();
+        }
+
+        function closeVoiceModalFunc() {
+            voiceModal.style.display = 'none';
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+            resetVoiceModal();
+        }
+
+        function resetVoiceModal() {
+            recordingSeconds = 0;
+            recordingTimerEl.textContent = '00:00';
+            recordingStatus.textContent = 'Ready to record';
+            startRecording.disabled = false;
+            stopRecording.disabled = true;
+            playRecording.disabled = true;
+            sendVoiceBtn.disabled = true;
+            recordedAudioBlob = null;
+            audioChunks = [];
+        }
+
+        async function startVoiceRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    recordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    playRecording.disabled = false;
+                    sendVoiceBtn.disabled = false;
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                startRecording.disabled = true;
+                stopRecording.disabled = false;
+                recordingStatus.textContent = 'Recording...';
+                
+                recordingTimer = setInterval(() => {
+                    recordingSeconds++;
+                    const minutes = Math.floor(recordingSeconds / 60);
+                    const seconds = recordingSeconds % 60;
+                    recordingTimerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                recordingStatus.textContent = 'Error accessing microphone';
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                clearInterval(recordingTimer);
+                startRecording.disabled = false;
+                stopRecording.disabled = true;
+                recordingStatus.textContent = 'Recording completed';
+            }
+        }
+
+        function playRecordedAudio() {
+            if (recordedAudioBlob) {
+                const audioUrl = URL.createObjectURL(recordedAudioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+                audio.addEventListener('ended', () => {
+                    URL.revokeObjectURL(audioUrl);
+                });
+            }
+        }
+
+        async function sendVoiceMessage() {
+            if (!recordedAudioBlob) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Audio = e.target.result.split(',')[1];
+                
+                try {
+                    const response = await fetch(liveChatUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            audio_data: base64Audio,
+                            product_id: productId,
+                            session_id: sessionId
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        appendMessage('user', '[Voice Message]');
+                        appendMessage('assistant', data.response, data.chat_id);
+                        closeVoiceModalFunc();
+                    } else {
+                        recordingStatus.textContent = 'Error: ' + (data.error || 'Failed to process voice');
+                    }
+                } catch (error) {
+                    console.error('Voice message error:', error);
+                    recordingStatus.textContent = 'Error sending voice message';
+                }
+            };
+            reader.readAsDataURL(recordedAudioBlob);
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imageModal.style.display = 'flex';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function closeImageModalFunc() {
+            imageModal.style.display = 'none';
+            imagePrompt.value = '';
+            imageResults.innerHTML = '';
+            selectedImageFile = null;
+        }
+
+        async function analyzeImage() {
+            if (!selectedImageFile || !imagePrompt.value.trim()) {
+                alert('Please select an image and provide analysis instructions');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result.split(',')[1];
+                
+                analyzeImageBtn.disabled = true;
+                analyzeImageBtn.innerHTML = '<i class="material-icons spinning">autorenew</i> Analyzing...';
+
+                try {
+                    const response = await fetch(imageProcessUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'analyze',
+                            image_data: base64Image,
+                            prompt: imagePrompt.value.trim(),
+                            mime_type: selectedImageFile.type
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        imageResults.innerHTML = `<h4><i class="material-icons">analytics</i> Analysis Results</h4><div class="analysis-result">${data.analysis}</div>`;
+                        appendMessage('user', `[Image Analysis] ${imagePrompt.value}`);
+                        appendMessage('assistant', `Image Analysis: ${data.analysis}`);
+                        closeImageModalFunc();
+                    } else {
+                        imageResults.innerHTML = `<div class="error"><i class="material-icons">error</i> Error: ${data.error}</div>`;
+                    }
+                } catch (error) {
+                    console.error('Image analysis error:', error);
+                    imageResults.innerHTML = '<div class="error"><i class="material-icons">error</i> Error analyzing image</div>';
+                } finally {
+                    analyzeImageBtn.disabled = false;
+                    analyzeImageBtn.innerHTML = '<i class="material-icons">visibility</i> Analyze Image';
+                }
+            };
+            reader.readAsDataURL(selectedImageFile);
+        }
+
+        async function processImage() {
+            if (!selectedImageFile || !imagePrompt.value.trim()) {
+                alert('Please select an image and provide editing instructions');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result.split(',')[1];
+                
+                processImageBtn.disabled = true;
+                processImageBtn.innerHTML = '<i class="material-icons spinning">autorenew</i> Processing...';
+
+                try {
+                    const response = await fetch(imageProcessUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'edit',
+                            image_data: base64Image,
+                            prompt: imagePrompt.value.trim(),
+                            mime_type: selectedImageFile.type
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        displayImageResults(data.edited_images, 'Processed Images');
+                        appendMessage('user', `[Image Processing] ${imagePrompt.value}`);
+                        appendMessage('assistant', 'I\'ve processed your image with AI. Here are the results above.');
+                        closeImageModalFunc();
+                    } else {
+                        imageResults.innerHTML = `<div class="error"><i class="material-icons">error</i> Error: ${data.error}</div>`;
+                    }
+                } catch (error) {
+                    console.error('Image processing error:', error);
+                    imageResults.innerHTML = '<div class="error"><i class="material-icons">error</i> Error processing image</div>';
+                } finally {
+                    processImageBtn.disabled = false;
+                    processImageBtn.innerHTML = '<i class="material-icons">edit</i> Process Image';
+                }
+            };
+            reader.readAsDataURL(selectedImageFile);
+        }
+
+        async function generateImage() {
+            if (!imagePrompt.value.trim()) {
+                alert('Please provide a description for image generation');
+                return;
+            }
+
+            generateImageBtn.disabled = true;
+            generateImageBtn.innerHTML = '<i class="material-icons spinning">autorenew</i> Generating...';
+
+            try {
+                const response = await fetch(imageProcessUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'generate',
+                        prompt: imagePrompt.value.trim(),
+                        size: '1024x1024',
+                        count: 1
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayImageResults(data.images, 'Generated Images');
+                    appendMessage('user', `[Generate Image] ${imagePrompt.value}`);
+                    appendMessage('assistant', 'I\'ve generated an image based on your description. Here it is above.');
+                    closeImageModalFunc();
+                } else {
+                    imageResults.innerHTML = `<div class="error"><i class="material-icons">error</i> Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Image generation error:', error);
+                imageResults.innerHTML = '<div class="error"><i class="material-icons">error</i> Error generating image</div>';
+            } finally {
+                generateImageBtn.disabled = false;
+                generateImageBtn.innerHTML = '<i class="material-icons">auto_fix_high</i> Generate New Image';
+            }
+        }
+
+        function displayImageResults(images, title) {
+            imageResults.innerHTML = `<h4><i class="material-icons">photo_library</i> ${title}</h4>`;
+            images.forEach((image, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'result-image-container';
+                imgContainer.innerHTML = `
+                    <img src="${image.url}" alt="Result ${index + 1}" class="result-image">
+                    <div class="image-actions">
+                        <a href="${image.url}" target="_blank" class="download-btn">
+                            <i class="material-icons">download</i> View Full Size
+                        </a>
+                    </div>
+                `;
+                imageResults.appendChild(imgContainer);
+            });
+        }
+
+        // Modern chat display mode logic
+        function setChatDisplayMode() {
+            switch (chatDisplayMode) {
+                case 'embedded':
+                    chatState.poppedOut = false;
+                    chatContainer.classList.remove('popped-out', 'sticky');
+                    break;
+                case 'stick':
+                    chatState.poppedOut = false;
+                    chatContainer.classList.remove('popped-out');
+                    chatContainer.classList.add('sticky');
+                    break;
+                case 'popout':
+                    chatState.poppedOut = true;
+                    chatContainer.classList.remove('sticky');
+                    chatContainer.classList.add('popped-out');
+                    break;
+                case 'nochange':
+                default:
+                    // Use last user state (session/localStorage)
+                    if (chatState.poppedOut) {
+                        chatContainer.classList.add('popped-out');
+                        chatContainer.classList.remove('sticky');
+                    } else {
+                        chatContainer.classList.remove('popped-out');
+                        chatContainer.classList.remove('sticky');
+                    }
+                    break;
+            }
+        }
+        setChatDisplayMode();
+
+        // If sticky mode, apply fixed CSS
+        if (chatDisplayMode === 'stick') {
+            chatContainer.style.position = 'fixed';
+            chatContainer.style.bottom = '20px';
+            chatContainer.style.right = '20px';
+            chatContainer.style.zIndex = 10000;
+            chatContainer.style.width = '400px';
+            chatContainer.style.height = '600px';
+        }
+
+        initializeChat();
+    });
 </script>
+
+<style>
+/* Additional styles for icons */
+.material-icons.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.feedback-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.feedback-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.feedback-btn:hover:not(:disabled) {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.feedback-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.analysis-result {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 12px;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.error {
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.error .material-icons {
+    font-size: 18px;
+}
+
+.chat-container.sticky {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 10000 !important;
+    width: 400px !important;
+    height: 600px !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+    border: 2px solid #007cba;
+}
+</style>
+<?php endif; ?>
+

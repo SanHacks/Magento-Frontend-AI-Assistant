@@ -5,5 +5,8 @@
         <route id="productinfoagent" frontName="productinfoagent">
             <module name="Gundo_ProductInfoAgent" before="Magento_Backend"/>
         </route>
+        <route id="productinfoagent_dashboard" frontName="productinfoagent_dashboard">
+            <module name="Gundo_ProductInfoAgent" before="Magento_Backend"/>
+        </route>
     </router>
 </config>

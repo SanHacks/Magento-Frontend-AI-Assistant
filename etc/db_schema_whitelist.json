@@ -1,2 +1,70 @@
 {
+    "productinfoagento_ai": {
+        "column": {
+            "chat_id": true,
+            "user_id": true,
+            "session_id": true,
+            "created_at": true,
+            "product_id": true,
+            "updated_at": true,
+            "data_collection": true,
+            "message": true,
+            "model": true,
+            "response_time_ms": true,
+            "tokens_prompt": true,
+            "tokens_response": true,
+            "feedback": true,
+            "user_agent": true,
+            "ip_address": true,
+            "page_url": true,
+            "voice_requested": true,
+            "conversation_context": true,
+            "interaction_sequence": true
+        },
+        "index": {
+            "PRODUCTINFOAGENTO_AI_ID": true,
+            "PRODUCTINFOAGENTO_AI_SESSION_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "productinfoagent_suggestion": {
+        "column": {
+            "suggestion_id": true,
+            "product_id": true,
+            "question": true,
+            "created_at": true,
+            "priority": true,
+            "is_active": true
+        },
+        "index": {
+            "PRODUCTINFOAGENT_SUGGESTION_PRODUCT_ID": true,
+            "PRODUCTINFOAGENT_SUGGESTION_PRIORITY": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PRODUCTINFOAGENT_SUGGESTION_PRODUCT_ID_CATALOG_PRODUCT_ENTITY_ENTITY_ID": true
+        }
+    },
+    "productinfoagent_suggestion_view": {
+        "column": {
+            "view_id": true,
+            "product_id": true,
+            "customer_id": true,
+            "session_id": true,
+            "viewed_suggestions": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PRODUCTINFOAGENT_SUGGESTION_VIEW_PRODUCT_CUSTOMER": true,
+            "PRODUCTINFOAGENT_SUGGESTION_VIEW_SESSION": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PRODUCTINFOAGENT_SUGGESTION_VIEW_PRODUCT_ID_CATALOG_PRODUCT_ENTITY_ENTITY_ID": true,
+            "PRODUCTINFOAGENT_SUGGESTION_VIEW_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID": true
+        }
+    }
 }

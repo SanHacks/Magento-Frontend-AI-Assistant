@@ -47,10 +47,10 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     }
 
     /**
-     * @param array|null $data
+     * @param string|null $data
      * @return ProductInfoAgentInterface
      */
-    public function setDataCollection(?array $data): ProductInfoAgentInterface
+    public function setDataCollection(?string $data): ProductInfoAgentInterface
     {
         return $this->setData(self::DATA, $data);
     }

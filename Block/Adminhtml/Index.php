@@ -3,7 +3,7 @@
 namespace Gundo\ProductInfoAgent\Block\Adminhtml;
 
 use Magento\Framework\View\Element\Template;
-use Gundo\ProductInfoAgent\Model\ProductInfoAgent;
+use Gundo\ProductInfoAgent\Model\ResourceModel\ProductInfoAgent\Collection as ProductInfoAgent;
 
 class Index extends Template
 {
@@ -26,6 +26,6 @@ class Index extends Template
      */
     public function getProductInfoAgent(): ProductInfoAgent
     {
-        return $this->productInfoAgent;
+        return $this->productInfoAgent->load();
     }
 }
