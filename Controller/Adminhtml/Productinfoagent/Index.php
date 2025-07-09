@@ -42,7 +42,7 @@ class Index extends Action implements HttpGetActionInterface
     public function execute(): Page|ResultInterface|ResponseInterface
     {
         $resultPage = $this->resultPageFactory->create();
-//        $resultPage->setActiveMenu('Gundo_ProductInfoAgent::productinfoagent');
+        $resultPage->setActiveMenu('Gundo_ProductInfoAgent::productinfoagent');
         $resultPage->getConfig()->getTitle()->prepend(__('Product Info Agent'));
 
         return $resultPage;

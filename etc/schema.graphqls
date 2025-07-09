@@ -1,0 +1,56 @@
+type ProductInfoAgentResponse {
+    message: String
+    chat_id: Int
+    model: String
+}
+
+type ProductInfoFeedbackResponse {
+    success: Boolean
+    error_message: String
+}
+
+type ProductInfoVoiceResponse {
+    success: Boolean
+    audio_data: String
+    error_message: String
+    from_cache: Boolean
+    model: String
+}
+
+input ProductInfoAgentInput {
+    message: String!
+    productId: Int
+    customerId: Int
+    sessionId: String
+}
+
+input ProductInfoFeedbackInput {
+    chatId: Int!
+    feedback: Int!
+}
+
+input ProductInfoVoiceInput {
+    text: String!
+    productId: Int
+    sessionId: String
+}
+
+type Mutation {
+    productInfoAgentMessage(
+        input: ProductInfoAgentInput!
+    ): ProductInfoAgentResponse @resolver(class: "Gundo\\ProductInfoAgent\\Model\\Resolver\\AgentMessage") @doc(description: "Send a message to the Product Info Agent")
+
+    productInfoAgentFeedback(
+        input: ProductInfoFeedbackInput!
+    ): ProductInfoFeedbackResponse @resolver(class: "Gundo\\ProductInfoAgent\\Model\\Resolver\\AgentFeedback") @doc(description: "Submit feedback for a chat message")
+
+    productInfoAgentVoice(
+        input: ProductInfoVoiceInput!
+    ): ProductInfoVoiceResponse @resolver(class: "Gundo\\ProductInfoAgent\\Model\\Resolver\\AgentVoice") @doc(description: "Generate voice audio for text")
+}
+
+type Query {
+    productInfoAgentSuggestions(
+        productId: Int!
+    ): [String] @resolver(class: "Gundo\\ProductInfoAgent\\Model\\Resolver\\AgentSuggestions") @doc(description: "Get suggested questions for a product")
+} 

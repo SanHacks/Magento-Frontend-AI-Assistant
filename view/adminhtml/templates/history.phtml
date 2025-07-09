@@ -1,0 +1,130 @@
+<?php
+/**
+ * @var \Gundo\ProductInfoAgent\Block\Adminhtml\History $block
+ */
+$chatHistory = $block->getChatHistory();
+?>
+<div class="admin__page-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= __('Chat History') ?></span>
+    </div>
+    
+    <div class="admin__page-section-content">
+        <div class="admin__data-grid-wrap" style="background: #fff; border: 1px solid #e3e3e3;">
+            <?php if ($chatHistory->getSize() > 0): ?>
+                <table class="admin__table-primary" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('ID') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('User') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('Message') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('Response') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('Voice') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('Feedback') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('Response Time') ?></th>
+                            <th style="padding: 15px 10px; border-bottom: 1px solid #e3e3e3; background: #f8f8f8; font-weight: 600;"><?= __('Date') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($chatHistory as $chat): ?>
+                            <tr style="border-bottom: 1px solid #f0f0f0;">
+                                <td style="padding: 12px 10px; vertical-align: top;">
+                                    <strong>#<?= $chat->getChatId() ?></strong>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top;">
+                                    <?php if ($chat->getUserId()): ?>
+                                        <span style="color: #007cba;">User #<?= $chat->getUserId() ?></span>
+                                    <?php else: ?>
+                                        <span style="color: #666;">Guest</span>
+                                    <?php endif; ?>
+                                    <?php if ($chat->getSessionId()): ?>
+                                        <br><small style="color: #999;">Session: <?= substr($chat->getSessionId(), 0, 8) ?>...</small>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top; max-width: 250px;">
+                                    <div style="word-wrap: break-word;">
+                                        <?= $block->escapeHtml($block->truncateMessage($chat->getMessage(), 150)) ?>
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top; max-width: 250px;">
+                                    <div style="word-wrap: break-word; color: #666;">
+                                        <?= $block->escapeHtml($block->truncateMessage($chat->getDataCollection(), 150)) ?>
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top; text-align: center;">
+                                    <?php if ($chat->getVoiceRequested()): ?>
+                                        <span style="color: #eb5202; font-size: 18px;">🔊</span>
+                                    <?php else: ?>
+                                        <span style="color: #ccc; font-size: 18px;">💬</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top; text-align: center;">
+                                    <?php if ($chat->getFeedback()): ?>
+                                        <?php 
+                                        $badgeClass = $block->getFeedbackClass($chat->getFeedback());
+                                        $badgeColor = $chat->getFeedback() === 'positive' ? '#28a745' : '#dc3545';
+                                        ?>
+                                        <span style="background: <?= $badgeColor ?>; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">
+                                            <?= $chat->getFeedback() === 'positive' ? '👍 Positive' : '👎 Negative' ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color: #999;">-</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top; text-align: center;">
+                                    <?php if ($chat->getResponseTimeMs()): ?>
+                                        <span style="color: #666;">
+                                            <?= $block->formatResponseTime((int)$chat->getResponseTimeMs()) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color: #999;">-</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="padding: 12px 10px; vertical-align: top; color: #666; font-size: 12px;">
+                                    <?= date('M j, Y', strtotime($chat->getCreatedAt())) ?><br>
+                                    <small><?= date('H:i:s', strtotime($chat->getCreatedAt())) ?></small>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                
+                <div style="padding: 20px; text-align: center; border-top: 1px solid #e3e3e3; background: #f8f8f8;">
+                    <p style="color: #666; margin: 0;">
+                        <?= __('Showing latest %1 interactions', $chatHistory->getSize()) ?>
+                        <?php if ($chatHistory->getSize() >= 50): ?>
+                            <br><small><?= __('More results may be available') ?></small>
+                        <?php endif; ?>
+                    </p>
+                </div>
+            <?php else: ?>
+                <div style="padding: 60px 20px; text-align: center;">
+                    <div style="color: #ccc; font-size: 48px; margin-bottom: 20px;">💬</div>
+                    <h3 style="color: #666; margin: 0 0 10px 0;"><?= __('No Chat History') ?></h3>
+                    <p style="color: #999; margin: 0;"><?= __('No chat interactions have been recorded yet.') ?></p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin__table-primary tr:hover {
+    background-color: #f9f9f9;
+}
+
+.admin__table-primary td {
+    transition: background-color 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .admin__table-primary {
+        font-size: 12px;
+    }
+    
+    .admin__table-primary th,
+    .admin__table-primary td {
+        padding: 8px 5px !important;
+    }
+}
+</style> 

@@ -4,9 +4,16 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Gundo_ProductInfoAgent:productinfoagent_menu" title="Product Info Agent"
-                                          translate="title" parent="Magento_Backend::content" sortOrder="90" action="productinfoagent/productinfoagent/index"/>/>
+                <resource id="Gundo_ProductInfoAgent::productinfoagent_menu" title="ProductInfo Agent"
+                          translate="title" parent="Magento_Backend::content" sortOrder="90">
+                    <resource id="Gundo_ProductInfoAgent::productinfoagent" title="Dashboard"
+                              translate="title" sortOrder="10"
+                              action="productinfoagent/productinfoagent/index"/>
+                    <resource id="Gundo_ProductInfoAgent::productinfoagent_history" title="Chat History"
+                              translate="title" sortOrder="20"
+                              action="productinfoagent/productinfoagent/history"/>
                 </resource>
+            </resource>
         </resources>
     </acl>
 </config>

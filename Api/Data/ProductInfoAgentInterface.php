@@ -101,10 +101,10 @@ interface ProductInfoAgentInterface
     public function setModel(?string $model): self;
 
     /**
-     * @param array|null $data
+     * @param string|null $data
      * @return mixed
      */
-    public function setDataCollection(?array $data):self;
+    public function setDataCollection(?string $data):self;
 
     /**
      * @return string|null

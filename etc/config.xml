@@ -13,7 +13,44 @@
                 <token_quantity>500</token_quantity>
                 <allow_guests>1</allow_guests>
                 <customer_groups>1,2,3</customer_groups>
+                <show_on_product_pages>1</show_on_product_pages>
+                <show_on_category_pages>1</show_on_category_pages>
+                <show_on_cms_pages>1</show_on_cms_pages>
+                <conversation_persistence>1</conversation_persistence>
+                <persistence_duration>24</persistence_duration>
             </general>
+            <advanced_rules>
+                <enable_advanced_rules>0</enable_advanced_rules>
+                <category_rules>{}</category_rules>
+                <attribute_filters>{}</attribute_filters>
+                <product_type_rules></product_type_rules>
+                <stock_rules>all</stock_rules>
+                <customer_segment_rules>{}</customer_segment_rules>
+                <time_based_rules>{}</time_based_rules>
+            </advanced_rules>
+            <voice>
+                <voice_enabled>0</voice_enabled>
+                <deepgram_api_key>REPLACE_WITH_YOUR_OWN_KEY</deepgram_api_key>
+                <voice_model>aura-2-thalia-en</voice_model>
+                <voice_cache_lifetime>30</voice_cache_lifetime>
+                <loading_message>Breathing...</loading_message>
+                <ready_message>I'm going to say out loud for you</ready_message>
+                <auto_play_responses>0</auto_play_responses>
+            </voice>
+            <theme>
+                <theme_adaptation_enabled>0</theme_adaptation_enabled>
+                <user_message_color>#007BFF</user_message_color>
+                <assistant_message_color>#f0f0f0</assistant_message_color>
+                <send_button_color>#007BFF</send_button_color>
+                <chat_container_border_color>#e0e0e0</chat_container_border_color>
+            </theme>
+            <suggestions>
+                <cache_lifetime>7</cache_lifetime>
+                <randomize_suggestions>1</randomize_suggestions>
+                <suggestions_per_load>4</suggestions_per_load>
+                <smart_rotation>1</smart_rotation>
+                <auto_voice_for_logged_users>1</auto_voice_for_logged_users>
+            </suggestions>
         </productinfoagent>
     </default>
 </config>

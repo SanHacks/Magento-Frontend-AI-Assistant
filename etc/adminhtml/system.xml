@@ -37,6 +37,15 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
+                <field id="selected_attributes" translate="label" type="multiselect" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Selected Context Attributes</label>
+                    <comment>Select attributes to use with the assistant.</comment>
+                    <source_model>Gundo\ProductInfoAgent\Model\Config\Source\ProductAttributes</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
                 <field id="token_quantity" translate="label" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Maximum Reponse Tokens</label>
@@ -62,6 +71,47 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
+                <field id="show_on_product_pages" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show on Product Detail Pages (PDPs)</label>
+                    <comment>Enable chat widget on individual product pages</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="show_on_category_pages" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show on Product Listing Pages (PLPs)</label>
+                    <comment>Enable chat widget on category/search result pages</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="show_on_cms_pages" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show on CMS Pages</label>
+                    <comment>Enable chat widget on CMS pages</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="conversation_persistence" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Conversation Persistence</label>
+                    <comment>Maintain conversation history when chat is popped out or moved between pages</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="persistence_duration" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Conversation Persistence Duration (hours)</label>
+                    <comment>How long to keep conversation history in browser storage (default: 24 hours)</comment>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="conversation_persistence">1</field>
+                    </depends>
+                </field>
                 <field id="save_to_customer_account" translate="label" type="select" sortOrder="70" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Save to Customer Account</label>
@@ -78,7 +128,154 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-
+                <field id="chat_display_mode" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Chat Display Mode</label>
+                    <comment>Choose how the chat appears by default on product pages.</comment>
+                    <source_model>Gundo\ProductInfoAgent\Model\Config\Source\ChatDisplayMode</source_model>
+                    <default>embedded</default>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="voice" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Voice Settings</label>
+                <field id="voice_enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Voice Features</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="deepgram_api_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Deepgram API Key</label>
+                    <comment>API key for Deepgram text-to-speech service</comment>
+                    <depends>
+                        <field id="voice_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="voice_model" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Voice Model</label>
+                    <source_model>Gundo\ProductInfoAgent\Model\Config\Source\VoiceModels</source_model>
+                    <depends>
+                        <field id="voice_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="voice_cache_lifetime" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Voice Cache Lifetime (minutes)</label>
+                    <comment>How long to cache voice responses in user session</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="voice_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="loading_message" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Loading Message</label>
+                    <comment>Message to show while generating voice (e.g., "Breathing...", "Thinking...", "Getting ready...")</comment>
+                    <depends>
+                        <field id="voice_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="ready_message" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Ready Message</label>
+                    <comment>Message to show when about to play audio (e.g., "I'm going to say out loud for you")</comment>
+                    <depends>
+                        <field id="voice_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="auto_play_responses" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto-Play Voice Responses</label>
+                    <comment>Automatically play voice for all assistant responses without requiring user to click voice button</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="voice_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="theme" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Theme Customization</label>
+                <field id="theme_adaptation_enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Theme Adaptation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="user_message_color" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>User Message Background Color</label>
+                    <comment>Hex color code (e.g., #007BFF)</comment>
+                    <validate>validate-color</validate>
+                    <depends>
+                        <field id="theme_adaptation_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="assistant_message_color" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Assistant Message Background Color</label>
+                    <comment>Hex color code (e.g., #f0f0f0)</comment>
+                    <validate>validate-color</validate>
+                    <depends>
+                        <field id="theme_adaptation_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="send_button_color" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send Button Color</label>
+                    <comment>Hex color code (e.g., #007BFF)</comment>
+                    <validate>validate-color</validate>
+                    <depends>
+                        <field id="theme_adaptation_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="chat_container_border_color" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Chat Container Border Color</label>
+                    <comment>Hex color code (e.g., #e0e0e0)</comment>
+                    <validate>validate-color</validate>
+                    <depends>
+                        <field id="theme_adaptation_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="suggestions" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Suggestions</label>
+                <field id="cache_lifetime" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cache Lifetime (days)</label>
+                    <comment>Number of days to cache suggested questions for a product. Set to 0 to disable caching.</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="randomize_suggestions" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Randomize Suggestions</label>
+                    <comment>Randomize suggestion order to avoid showing the same suggestions to users repeatedly</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="suggestions_per_load" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Suggestions Per Load</label>
+                    <comment>Number of suggestions to show at once (default: 4)</comment>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="smart_rotation" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Smart Suggestion Rotation</label>
+                    <comment>Track viewed suggestions per user/session and rotate to new ones when available</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="auto_voice_for_logged_users" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto Voice for Logged Users</label>
+                    <comment>Automatically play voice for logged-in users when auto-play is enabled</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
             </group>
             <group id="auth" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
@@ -95,6 +292,80 @@
                     <label>API Secret</label>
                     <depends>
                         <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="advanced_rules" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Advanced Display Rules</label>
+                <field id="enable_advanced_rules" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Advanced Rules</label>
+                    <comment>Enable advanced category and attribute-based display rules</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="general/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="category_rules" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Category Rules (JSON)</label>
+                    <comment><![CDATA[JSON format: {"include_categories": [1,2,3], "exclude_categories": [4,5], "category_conditions": {"1": {"min_products": 5}}}]]></comment>
+                    <depends>
+                        <field id="enable_advanced_rules">1</field>
+                    </depends>
+                </field>
+                <field id="attribute_filters" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Attribute Filters (JSON)</label>
+                    <comment><![CDATA[JSON format: {"brand": ["nike", "adidas"], "price_range": {"min": 10, "max": 500}, "status": [1]}]]></comment>
+                    <depends>
+                        <field id="enable_advanced_rules">1</field>
+                    </depends>
+                </field>
+                <field id="product_type_rules" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Only for Product Types</label>
+                    <comment>Select product types where chat should appear (leave empty for all types)</comment>
+                    <source_model>Magento\Catalog\Model\Product\Type</source_model>
+                    <depends>
+                        <field id="enable_advanced_rules">1</field>
+                    </depends>
+                </field>
+                <field id="stock_rules" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Stock-based Display</label>
+                    <comment>Control chat display based on product stock status</comment>
+                    <source_model>Gundo\ProductInfoAgent\Model\Config\Source\StockRules</source_model>
+                    <depends>
+                        <field id="enable_advanced_rules">1</field>
+                    </depends>
+                </field>
+                <field id="customer_segment_rules" translate="label" type="textarea" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Segment Rules (JSON)</label>
+                    <comment><![CDATA[JSON format: {"vip_customers": {"min_orders": 10}, "new_customers": {"max_days_registered": 30}}]]></comment>
+                    <depends>
+                        <field id="enable_advanced_rules">1</field>
+                    </depends>
+                </field>
+                <field id="time_based_rules" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Time-based Rules (JSON)</label>
+                    <comment><![CDATA[JSON format: {"business_hours": {"start": "09:00", "end": "17:00"}, "days": ["monday", "tuesday"]}]]></comment>
+                    <depends>
+                        <field id="enable_advanced_rules">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="image_ai" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Image AI</label>
+                <field id="image_ai_provider" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Image AI Provider</label>
+                    <source_model>Gundo\ProductInfoAgent\Model\Config\Source\ImageAiProviders</source_model>
+                </field>
+                <field id="dalle_api_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>DALL-E API Key</label>
+                    <depends>
+                        <field id="image_ai_provider">dalle</field>
+                    </depends>
+                </field>
+                <field id="gemini_api_key" translate="label" type="password" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Gemini API Key</label>
+                    <depends>
+                        <field id="image_ai_provider">gemini</field>
                     </depends>
                 </field>
             </group>

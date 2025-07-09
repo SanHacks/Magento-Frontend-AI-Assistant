@@ -6,4 +6,22 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/productinfoagent/feedback" method="POST">
+        <service class="Gundo\ProductInfoAgent\Api\ChatFeedbackInterface" method="submitFeedback"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/productinfoagent/suggestions/:productId" method="GET">
+        <service class="Gundo\ProductInfoAgent\Api\SuggestionInterface" method="getSuggestions"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/productinfoagent/voice" method="POST">
+        <service class="Gundo\ProductInfoAgent\Api\VoiceInterface" method="generateVoice"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>

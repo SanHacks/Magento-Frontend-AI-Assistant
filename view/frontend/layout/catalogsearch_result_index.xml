@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Gundo_ProductInfoAgent::css/style.css"/>
+        <css src="Gundo_ProductInfoAgent::css/chat-enhanced.css"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Gundo\ProductInfoAgent\Block\Chat" 
+                   name="productinfoagent.chat.search" 
+                   template="Gundo_ProductInfoAgent::chat.phtml"
+                   ifconfig="productinfoagent/general/enabled"
+                   after="-">
+                <arguments>
+                    <argument name="cache_lifetime" xsi:type="number">0</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page> 

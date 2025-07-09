@@ -14,7 +14,7 @@ class ProductInfoAgent extends AbstractDb
     /**
      * Initialize resource model.
      */
-    protected function _construct()
+    protected function _construct(): void
     {
         $this->_init('productinfoagento_ai', 'chat_id');
         $this->_useIsObjectNew = true;
