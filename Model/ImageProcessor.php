@@ -2,7 +2,6 @@
 
 namespace Gundo\ProductInfoAgent\Model;
 
-use Gundo\Imagine\Helper\Data as ImagineConfig;
 use Gundo\ProductInfoAgent\Helper\Data as ConfigHelper;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -14,11 +13,6 @@ use Psr\Log\LoggerInterface;
 
 class ImageProcessor
 {
-    /**
-     * @var ImagineConfig
-     */
-    private $imagineConfig;
-
     /**
      * @var ConfigHelper
      */
@@ -55,7 +49,6 @@ class ImageProcessor
     private $logger;
 
     /**
-     * @param ImagineConfig $imagineConfig
      * @param ConfigHelper $configHelper
      * @param Curl $curl
      * @param Json $json
@@ -65,7 +58,6 @@ class ImageProcessor
      * @param LoggerInterface $logger
      */
     public function __construct(
-        ImagineConfig $imagineConfig,
         ConfigHelper $configHelper,
         Curl $curl,
         Json $json,
@@ -74,7 +66,6 @@ class ImageProcessor
         File $fileDriver,
         LoggerInterface $logger
     ) {
-        $this->imagineConfig = $imagineConfig;
         $this->configHelper = $configHelper;
         $this->curl = $curl;
         $this->json = $json;
@@ -91,7 +82,7 @@ class ImageProcessor
      */
     public function isEnabled(): bool
     {
-        return $this->imagineConfig->isImagineEnabled() && $this->imagineConfig->getApiKey();
+        return $this->configHelper->isImagineEnabled() && $this->configHelper->getApiKey();
     }
 
     /**
@@ -112,7 +103,7 @@ class ImageProcessor
                 ];
             }
 
-            $apiKey = $this->imagineConfig->getApiKey();
+            $apiKey = $this->configHelper->getApiKey();
             
             // Use GPT-4 Vision API for image analysis
             $url = 'https://api.openai.com/v1/chat/completions';
@@ -356,8 +347,8 @@ class ImageProcessor
                 ];
             }
 
-            $apiKey = $this->imagineConfig->getApiKey();
-            $fineTune = $this->imagineConfig->getModelFineTune();
+            $apiKey = $this->configHelper->getApiKey();
+            $fineTune = ''; // Removed as it doesn't exist in the helper
 
             // Use DALL-E 3 API for better quality and realism
             $url = 'https://api.openai.com/v1/images/generations';
@@ -533,7 +524,7 @@ class ImageProcessor
     private function callImageEditingAPI(string $imagePath, string $prompt): array
     {
         try {
-            $apiKey = $this->imagineConfig->getApiKey();
+            $apiKey = $this->configHelper->getApiKey();
             
             // Use DALL-E 2 image edit endpoint
             $url = 'https://api.openai.com/v1/images/edits';
