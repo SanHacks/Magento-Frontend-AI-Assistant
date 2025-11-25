@@ -3,10 +3,10 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 380px;
-    max-width: 90vw;
-    height: 500px;
-    max-height: 80vh;
+    width: 95vw;
+    max-width: 95vw;
+    height: 85vh;
+    max-height: 85vh;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     overflow: hidden;
@@ -92,8 +92,7 @@
 
 .chat-box {
     flex: 1;
-    min-height: 320px;
-    max-height: 400px;
+    min-height: 400px;
     overflow-y: auto;
     padding: 20px;
     background-color: #f9f9f9;
@@ -357,15 +356,35 @@
 .resize-handle {
     position: absolute;
     bottom: 0;
+    left: 0;
     right: 0;
-    width: 15px;
-    height: 15px;
-    cursor: nwse-resize;
-    background: transparent;
+    height: 8px;
+    background: #f0f0f0;
+    cursor: ns-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 12px;
 }
 
 .loading-container {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 100vw;
+        height: 100vh;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+    }
+    
+    .chat-header {
+        border-radius: 0;
+    }
 }
