@@ -369,4 +369,14 @@ class Chat extends Template
 
         return 'page_' . $moduleName . '_' . $actionName;
     }
+
+    /**
+     * Get chat display mode
+     *
+     * @return string
+     */
+    public function getChatDisplayMode(): string
+    {
+        return $this->configHelper->getChatDisplayMode() ?? 'embedded';
+    }
 }
