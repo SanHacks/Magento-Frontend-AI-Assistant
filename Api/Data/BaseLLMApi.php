@@ -64,8 +64,8 @@ abstract class BaseLLMApi
     }
 
     /**
-     * @param  string  $message
-     * @param  array   $productData
+     * @param string $message
+     * @param array  $productData
      * @return array
      */
     protected function callGeminiModel(string $message, array $productData = []): array
