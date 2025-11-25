@@ -18,7 +18,7 @@ class ApiDataCollection
     protected LLModelApi $largeLanguageModelApi;
 
     /**
-     * @param Data $configData
+     * @param Data       $configData
      * @param LLModelApi $largeLanguageModelApi
      */
     public function __construct(
@@ -30,9 +30,9 @@ class ApiDataCollection
     }
 
     /**
-     * @param string $message
-     * @param null $productDetails
-     * @param null $customerId
+     * @param  string $message
+     * @param  null   $productDetails
+     * @param  null   $customerId
      * @return array
      */
     public function callProductAgent(string $message, $productDetails = null, $customerId = null): array

@@ -26,7 +26,7 @@ class History extends Action implements HttpGetActionInterface
 
     /**
      * @param Action\Context $context
-     * @param PageFactory $resultPageFactory
+     * @param PageFactory    $resultPageFactory
      */
     public function __construct(
         Action\Context $context,

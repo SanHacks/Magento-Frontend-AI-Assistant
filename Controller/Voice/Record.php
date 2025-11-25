@@ -39,10 +39,10 @@ class Record implements HttpPostActionInterface
 
     /**
      * @param RequestInterface $request
-     * @param JsonFactory $jsonFactory
-     * @param VoiceRecording $voiceRecording
-     * @param ConfigHelper $configHelper
-     * @param LoggerInterface $logger
+     * @param JsonFactory      $jsonFactory
+     * @param VoiceRecording   $voiceRecording
+     * @param ConfigHelper     $configHelper
+     * @param LoggerInterface  $logger
      */
     public function __construct(
         RequestInterface $request,
@@ -70,44 +70,54 @@ class Record implements HttpPostActionInterface
         try {
             // Check if voice is enabled
             if (!$this->configHelper->isVoiceEnabled()) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'Voice recording is not enabled'
-                ]);
+                    ]
+                );
             }
 
             $audioData = $this->request->getParam('audio_data');
             $mimeType = $this->request->getParam('mime_type', 'audio/wav');
 
             if (!$audioData) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'No audio data provided'
-                ]);
+                    ]
+                );
             }
 
             // Process speech to text
             $speechResult = $this->voiceRecording->speechToText($audioData, $mimeType);
 
             if (!$speechResult['success']) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => $speechResult['error']
-                ]);
+                    ]
+                );
             }
 
-            return $result->setData([
+            return $result->setData(
+                [
                 'success' => true,
                 'transcript' => $speechResult['transcript'],
                 'confidence' => $speechResult['confidence']
-            ]);
+                ]
+            );
 
         } catch (\Exception $e) {
             $this->logger->error('Voice Record controller error: ' . $e->getMessage());
-            return $result->setData([
+            return $result->setData(
+                [
                 'success' => false,
                 'error' => 'An error occurred while processing voice recording'
-            ]);
+                ]
+            );
         }
     }
 } 

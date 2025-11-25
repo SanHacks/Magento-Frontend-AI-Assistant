@@ -16,7 +16,7 @@ class SuggestionViewModel extends AbstractModel
     }
 
     /**
-     * @param int $productId
+     * @param  int $productId
      * @return $this
      */
     public function setProductId(int $productId): self
@@ -33,7 +33,7 @@ class SuggestionViewModel extends AbstractModel
     }
 
     /**
-     * @param int|null $customerId
+     * @param  int|null $customerId
      * @return $this
      */
     public function setCustomerId(?int $customerId): self
@@ -50,7 +50,7 @@ class SuggestionViewModel extends AbstractModel
     }
 
     /**
-     * @param string $sessionId
+     * @param  string $sessionId
      * @return $this
      */
     public function setSessionId(string $sessionId): self
@@ -67,7 +67,7 @@ class SuggestionViewModel extends AbstractModel
     }
 
     /**
-     * @param array $suggestions
+     * @param  array $suggestions
      * @return $this
      */
     public function setViewedSuggestions(array $suggestions): self
@@ -87,7 +87,7 @@ class SuggestionViewModel extends AbstractModel
     /**
      * Add a suggestion ID to the viewed list
      *
-     * @param int $suggestionId
+     * @param  int $suggestionId
      * @return $this
      */
     public function addViewedSuggestion(int $suggestionId): self
@@ -103,7 +103,7 @@ class SuggestionViewModel extends AbstractModel
     /**
      * Check if a suggestion has been viewed
      *
-     * @param int $suggestionId
+     * @param  int $suggestionId
      * @return bool
      */
     public function hasSuggestionBeenViewed(int $suggestionId): bool

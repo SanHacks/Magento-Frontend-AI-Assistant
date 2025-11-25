@@ -40,7 +40,8 @@ class AudioPlayer extends Command
             ->addArgument(self::ARGUMENT_FILE, InputArgument::OPTIONAL, 'Audio file path (required for play and info actions)')
             ->addOption(self::OPTION_PLAYER, 'p', InputOption::VALUE_OPTIONAL, 'Preferred audio player (auto|ffplay|aplay|paplay|mpv|vlc)', 'auto')
             ->addOption(self::OPTION_CLEANUP_HOURS, null, InputOption::VALUE_OPTIONAL, 'Hours to keep temp files during cleanup (default: 24)', 24)
-            ->setHelp('
+            ->setHelp(
+                '
 This command provides audio playback and management functionality:
 
 <info>Actions:</info>
@@ -55,7 +56,8 @@ This command provides audio playback and management functionality:
   <comment>bin/magento gundo:product-agent:audio list-players</comment>
   <comment>bin/magento gundo:product-agent:audio info /path/to/audio.wav</comment>
   <comment>bin/magento gundo:product-agent:audio cleanup --cleanup-hours=48</comment>
-            ');
+            '
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -69,21 +71,21 @@ This command provides audio playback and management functionality:
             $cleanupHours = (int)$input->getOption(self::OPTION_CLEANUP_HOURS);
 
             switch ($action) {
-                case 'play':
-                    return $this->playAudio($file, $player, $output);
+            case 'play':
+                return $this->playAudio($file, $player, $output);
                 
-                case 'list-players':
-                    return $this->listPlayers($output);
+            case 'list-players':
+                return $this->listPlayers($output);
                 
-                case 'info':
-                    return $this->showAudioInfo($file, $output);
+            case 'info':
+                return $this->showAudioInfo($file, $output);
                 
-                case 'cleanup':
-                    return $this->cleanupTempFiles($cleanupHours, $output);
+            case 'cleanup':
+                return $this->cleanupTempFiles($cleanupHours, $output);
                 
-                default:
-                    $output->writeln('<error>Invalid action. Use: play|list-players|info|cleanup</error>');
-                    return Command::FAILURE;
+            default:
+                $output->writeln('<error>Invalid action. Use: play|list-players|info|cleanup</error>');
+                return Command::FAILURE;
             }
 
         } catch (\Exception $e) {
@@ -95,9 +97,9 @@ This command provides audio playback and management functionality:
     /**
      * Play audio file
      *
-     * @param string|null $file
-     * @param string $player
-     * @param OutputInterface $output
+     * @param  string|null     $file
+     * @param  string          $player
+     * @param  OutputInterface $output
      * @return int
      */
     private function playAudio(?string $file, string $player, OutputInterface $output): int
@@ -123,7 +125,7 @@ This command provides audio playback and management functionality:
     /**
      * List available audio players
      *
-     * @param OutputInterface $output
+     * @param  OutputInterface $output
      * @return int
      */
     private function listPlayers(OutputInterface $output): int
@@ -162,8 +164,8 @@ This command provides audio playback and management functionality:
     /**
      * Show audio file information
      *
-     * @param string|null $file
-     * @param OutputInterface $output
+     * @param  string|null     $file
+     * @param  OutputInterface $output
      * @return int
      */
     private function showAudioInfo(?string $file, OutputInterface $output): int
@@ -211,8 +213,8 @@ This command provides audio playback and management functionality:
     /**
      * Clean up temporary audio files
      *
-     * @param int $hours
-     * @param OutputInterface $output
+     * @param  int             $hours
+     * @param  OutputInterface $output
      * @return int
      */
     private function cleanupTempFiles(int $hours, OutputInterface $output): int
@@ -233,7 +235,7 @@ This command provides audio playback and management functionality:
     /**
      * Format age in seconds to human readable format
      *
-     * @param int $seconds
+     * @param  int $seconds
      * @return string
      */
     private function formatAge(int $seconds): string
@@ -252,7 +254,7 @@ This command provides audio playback and management functionality:
     /**
      * Format duration in seconds to human readable format
      *
-     * @param float $seconds
+     * @param  float $seconds
      * @return string
      */
     private function formatDuration(float $seconds): string

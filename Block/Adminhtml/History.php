@@ -15,9 +15,9 @@ class History extends Template
     private $collectionFactory;
 
     /**
-     * @param Context $context
+     * @param Context           $context
      * @param CollectionFactory $collectionFactory
-     * @param array $data
+     * @param array             $data
      */
     public function __construct(
         Context $context,
@@ -45,7 +45,7 @@ class History extends Template
     /**
      * Format response time for display
      *
-     * @param int $timeMs
+     * @param  int $timeMs
      * @return string
      */
     public function formatResponseTime(int $timeMs): string
@@ -60,8 +60,8 @@ class History extends Template
     /**
      * Truncate message for display
      *
-     * @param string $message
-     * @param int $length
+     * @param  string $message
+     * @param  int    $length
      * @return string
      */
     public function truncateMessage(string $message, int $length = 100): string
@@ -76,18 +76,18 @@ class History extends Template
     /**
      * Get feedback badge class
      *
-     * @param string $feedback
+     * @param  string $feedback
      * @return string
      */
     public function getFeedbackClass(string $feedback): string
     {
         switch ($feedback) {
-            case 'positive':
-                return 'badge-success';
-            case 'negative':
-                return 'badge-danger';
-            default:
-                return 'badge-secondary';
+        case 'positive':
+            return 'badge-success';
+        case 'negative':
+            return 'badge-danger';
+        default:
+            return 'badge-secondary';
         }
     }
 } 

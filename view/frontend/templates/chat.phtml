@@ -61,12 +61,22 @@ try {
 <?php endif; ?>
 
 <?php if (isset($shouldDisplayChat) && $shouldDisplayChat): ?>
-<div id="chat-container" class="chat-container">
+<!-- Chat Toggle Button -->
+<button id="chat-toggle-button" class="chat-toggle-button" title="Open Chat">
+    <i class="material-icons">chat</i>
+</button>
+
+<div id="chat-container" class="chat-container hidden">
     <div class="chat-header">
-        <span><i class="material-icons">chat</i> Chat with an Assistant</span>
-        <button id="popout-button" class="popout-button" title="Pop-out Chat">
-            <i class="material-icons">open_in_new</i>
-        </button>
+        <span><i class="material-icons">smart_toy</i> AI Assistant</span>
+        <div>
+            <button id="popout-button" class="popout-button" title="Pop-out Chat">
+                <i class="material-icons">open_in_new</i>
+            </button>
+            <button id="minimize-button" class="minimize-button" title="Minimize Chat">
+                <i class="material-icons">minimize</i>
+            </button>
+        </div>
     </div>
     <div id="chat-box" class="chat-box">
         <!-- Chat messages will appear here -->
@@ -170,10 +180,12 @@ try {
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const chatContainer = document.getElementById('chat-container');
+        const chatToggleButton = document.getElementById('chat-toggle-button');
         const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const popoutButton = document.getElementById('popout-button');
+        const minimizeButton = document.getElementById('minimize-button');
         const suggestedQuestionsContainer = document.getElementById('suggested-questions');
         const resizeHandle = document.getElementById('resize-handle');
 
@@ -604,6 +616,19 @@ try {
             if (chatDisplayMode === 'nochange') {
                 popoutChat();
             }
+        });
+
+        // Chat toggle functionality
+        chatToggleButton.addEventListener('click', function() {
+            chatContainer.classList.remove('hidden');
+            chatToggleButton.classList.add('hidden');
+            chatContainer.classList.remove('minimized');
+            userInput.focus();
+        });
+
+        minimizeButton.addEventListener('click', function() {
+            chatContainer.classList.add('hidden');
+            chatToggleButton.classList.remove('hidden');
         });
         
         // Resizing logic

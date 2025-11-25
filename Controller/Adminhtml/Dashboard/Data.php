@@ -27,9 +27,9 @@ class Data extends Action
     private $logger;
 
     /**
-     * @param Context $context
-     * @param JsonFactory $jsonFactory
-     * @param Dashboard $dashboardBlock
+     * @param Context         $context
+     * @param JsonFactory     $jsonFactory
+     * @param Dashboard       $dashboardBlock
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -82,17 +82,19 @@ class Data extends Action
         } catch (\Exception $e) {
             $this->logger->error('Dashboard data error: ' . $e->getMessage());
             
-            return $result->setData([
+            return $result->setData(
+                [
                 'success' => false,
                 'error' => 'Failed to load dashboard data'
-            ]);
+                ]
+            );
         }
     }
 
     /**
      * Calculate trend percentage for metrics
      *
-     * @param string $metric
+     * @param  string $metric
      * @return string
      */
     private function calculateTrend(string $metric): string

@@ -47,9 +47,9 @@ class AdvancedRulesEngine
     /**
      * Check if chat should be displayed based on advanced rules
      *
-     * @param Product|null $product
-     * @param int|null $categoryId
-     * @param array $context
+     * @param  Product|null $product
+     * @param  int|null     $categoryId
+     * @param  array        $context
      * @return bool
      */
     public function shouldDisplayChat(?Product $product = null, ?int $categoryId = null, array $context = []): bool
@@ -171,7 +171,7 @@ class AdvancedRulesEngine
     /**
      * Check category rules
      *
-     * @param int $categoryId
+     * @param  int $categoryId
      * @return bool
      */
     private function checkCategoryRules(int $categoryId): bool
@@ -221,7 +221,7 @@ class AdvancedRulesEngine
     /**
      * Check product type rules
      *
-     * @param Product $product
+     * @param  Product $product
      * @return bool
      */
     private function checkProductTypeRules(Product $product): bool
@@ -237,7 +237,7 @@ class AdvancedRulesEngine
     /**
      * Check stock rules
      *
-     * @param Product $product
+     * @param  Product $product
      * @return bool
      */
     private function checkStockRules(Product $product): bool
@@ -253,17 +253,17 @@ class AdvancedRulesEngine
             $qty = $stockItem->getQty();
 
             switch ($stockRule) {
-                case 'in_stock_only':
-                    return $isInStock;
-                case 'out_of_stock_only':
-                    return !$isInStock;
-                case 'low_stock_only':
-                    $minQty = $stockItem->getMinQty() ?: 5; // Default threshold
-                    return $isInStock && $qty <= $minQty;
-                case 'exclude_out_of_stock':
-                    return $isInStock;
-                default:
-                    return true;
+            case 'in_stock_only':
+                return $isInStock;
+            case 'out_of_stock_only':
+                return !$isInStock;
+            case 'low_stock_only':
+                $minQty = $stockItem->getMinQty() ?: 5; // Default threshold
+                return $isInStock && $qty <= $minQty;
+            case 'exclude_out_of_stock':
+                return $isInStock;
+            default:
+                return true;
             }
         } catch (\Exception $e) {
             $this->logger->warning('Stock rule check failed: ' . $e->getMessage());
@@ -274,7 +274,7 @@ class AdvancedRulesEngine
     /**
      * Check attribute filters
      *
-     * @param Product $product
+     * @param  Product $product
      * @return bool
      */
     private function checkAttributeFilters(Product $product): bool

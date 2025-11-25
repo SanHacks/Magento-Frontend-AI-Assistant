@@ -52,7 +52,8 @@ class VoiceDocker extends Command
             ->addOption(self::OPTION_PUBLIC, 'p', InputOption::VALUE_NONE, 'Save to public media directory for web access')
             ->addOption(self::OPTION_INFO, 'i', InputOption::VALUE_OPTIONAL, 'Get info about an existing audio file')
             ->addOption(self::OPTION_LIST, 'l', InputOption::VALUE_NONE, 'List all saved audio files')
-            ->setHelp('
+            ->setHelp(
+                '
 This command provides voice generation functionality optimized for Docker environments:
 
 <info>Examples:</info>
@@ -77,7 +78,8 @@ This command provides voice generation functionality optimized for Docker enviro
   - Downloaded from the container
   - Accessed via web if saved to public media
   - Transferred to host system for playback
-            ');
+            '
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -252,12 +254,14 @@ This command provides voice generation functionality optimized for Docker enviro
             foreach ($files as $file) {
                 $info = $this->audioPlayer->getAudioInfo($file);
                 if ($info['exists']) {
-                    $table->addRow([
+                    $table->addRow(
+                        [
                         $info['filename'],
                         $info['size_human'],
                         $info['modified'],
                         $this->formatAge($info['age_seconds'])
-                    ]);
+                        ]
+                    );
                     $totalFiles++;
                 }
             }

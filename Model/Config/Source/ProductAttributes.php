@@ -23,7 +23,7 @@ class ProductAttributes implements ArrayInterface
 
     /**
      * @param AttributeRepositoryInterface $attributeRepository
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param SearchCriteriaBuilder        $searchCriteriaBuilder
      */
     public function __construct(
         AttributeRepositoryInterface $attributeRepository,

@@ -38,7 +38,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Set the message.
      *
-     * @param string|null $message
+     * @param  string|null $message
      * @return $this
      */
     public function setMessage(?string $message): ProductInfoAgentInterface
@@ -47,7 +47,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     }
 
     /**
-     * @param string|null $data
+     * @param  string|null $data
      * @return ProductInfoAgentInterface
      */
     public function setDataCollection(?string $data): ProductInfoAgentInterface
@@ -73,7 +73,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Set the updated timestamp.
      *
-     * @param string|null $updatedAt
+     * @param  string|null $updatedAt
      * @return $this
      */
     public function setUpdatedAt(?string $updatedAt): ProductInfoAgentInterface
@@ -94,7 +94,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Set the created timestamp.
      *
-     * @param string|null $createdAt
+     * @param  string|null $createdAt
      * @return $this
      */
     public function setCreatedAt(?string $createdAt): ProductInfoAgentInterface
@@ -115,7 +115,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Set the user ID.
      *
-     * @param int|null $userId
+     * @param  int|null $userId
      * @return $this
      */
     public function setUserId(?int $userId): ProductInfoAgentInterface
@@ -136,7 +136,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Set the model.
      *
-     * @param string|null $model
+     * @param  string|null $model
      * @return $this
      */
     public function setModel(?string $model): ProductInfoAgentInterface
@@ -157,7 +157,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Set the chat ID.
      *
-     * @param int|null $chatId
+     * @param  int|null $chatId
      * @return $this
      */
     public function setChatId(?int $chatId): ProductInfoAgent
@@ -169,7 +169,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     /**
      * Save the model and manage timestamps.
      *
-     * @param array $data
+     * @param  array $data
      * @return $this
      * @throws \Exception
      */
@@ -199,7 +199,7 @@ class ProductInfoAgent extends AbstractModel implements ProductInfoAgentInterfac
     }
 
     /**
-     * @param int|null $product
+     * @param  int|null $product
      * @return self
      */
     public function setProductId(?int $product): ProductInfoAgentInterface

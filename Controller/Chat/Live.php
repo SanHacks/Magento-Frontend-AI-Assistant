@@ -51,12 +51,12 @@ class Live implements HttpPostActionInterface
 
     /**
      * @param RequestInterface $request
-     * @param JsonFactory $jsonFactory
-     * @param Chat $chatModel
-     * @param VoiceRecording $voiceRecording
-     * @param ConfigHelper $configHelper
-     * @param CustomerSession $customerSession
-     * @param LoggerInterface $logger
+     * @param JsonFactory      $jsonFactory
+     * @param Chat             $chatModel
+     * @param VoiceRecording   $voiceRecording
+     * @param ConfigHelper     $configHelper
+     * @param CustomerSession  $customerSession
+     * @param LoggerInterface  $logger
      */
     public function __construct(
         RequestInterface $request,
@@ -98,26 +98,32 @@ class Live implements HttpPostActionInterface
                 if ($speechResult['success']) {
                     $message = $speechResult['transcript'];
                 } else {
-                    return $result->setData([
+                    return $result->setData(
+                        [
                         'success' => false,
                         'error' => 'Voice processing failed: ' . $speechResult['error']
-                    ]);
+                        ]
+                    );
                 }
             }
 
             if (!$message) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'No message or voice input provided'
-                ]);
+                    ]
+                );
             }
 
             // Check if user is allowed to chat
             if (!$this->configHelper->isGuestAllowed() && !$this->customerSession->isLoggedIn()) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'Please log in to use the chat feature'
-                ]);
+                    ]
+                );
             }
 
             // Process the chat message
@@ -129,10 +135,12 @@ class Live implements HttpPostActionInterface
             );
 
             if (empty($chatResponse) || isset($chatResponse[0]['error'])) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => $chatResponse[0]['error'] ?? 'Chat processing failed'
-                ]);
+                    ]
+                );
             }
 
             $response = $chatResponse[0];
@@ -153,10 +161,12 @@ class Live implements HttpPostActionInterface
 
         } catch (\Exception $e) {
             $this->logger->error('Live Chat controller error: ' . $e->getMessage());
-            return $result->setData([
+            return $result->setData(
+                [
                 'success' => false,
                 'error' => 'An error occurred while processing your message'
-            ]);
+                ]
+            );
         }
     }
 } 

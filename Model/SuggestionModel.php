@@ -16,7 +16,7 @@ class SuggestionModel extends AbstractModel
     }
 
     /**
-     * @param int $productId
+     * @param  int $productId
      * @return $this
      */
     public function setProductId(int $productId): self
@@ -33,7 +33,7 @@ class SuggestionModel extends AbstractModel
     }
 
     /**
-     * @param string $question
+     * @param  string $question
      * @return $this
      */
     public function setQuestion(string $question): self
@@ -50,7 +50,7 @@ class SuggestionModel extends AbstractModel
     }
 
     /**
-     * @param string $createdAt
+     * @param  string $createdAt
      * @return $this
      */
     public function setCreatedAt(string $createdAt): self

@@ -20,7 +20,7 @@ class ChatFeedback implements ChatFeedbackInterface
 
     /**
      * @param ProductInfoAgentFactory $productInfoAgentFactory
-     * @param Logger $logger
+     * @param Logger                  $logger
      */
     public function __construct(
         ProductInfoAgentFactory $productInfoAgentFactory,
@@ -31,8 +31,8 @@ class ChatFeedback implements ChatFeedbackInterface
     }
 
     /**
-     * @param int $chatId
-     * @param int $feedback
+     * @param  int $chatId
+     * @param  int $feedback
      * @return bool
      */
     public function submitFeedback(int $chatId, int $feedback): bool

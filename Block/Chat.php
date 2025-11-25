@@ -48,14 +48,14 @@ class Chat extends Template
     protected AdvancedRulesEngine $advancedRulesEngine;
 
     /**
-     * @param Context $context
-     * @param Registry $registry
-     * @param ProductRepository $productRepository
+     * @param Context               $context
+     * @param Registry              $registry
+     * @param ProductRepository     $productRepository
      * @param CustomerSessionHelper $customerSessionHelper
-     * @param StoreManager $storeManager
-     * @param ConfigHelper $configHelper
-     * @param AdvancedRulesEngine $advancedRulesEngine
-     * @param array $data
+     * @param StoreManager          $storeManager
+     * @param ConfigHelper          $configHelper
+     * @param AdvancedRulesEngine   $advancedRulesEngine
+     * @param array                 $data
      */
     public function __construct(
         Template\Context      $context,
@@ -258,11 +258,13 @@ class Chat extends Template
         }
 
         // Apply advanced rules if enabled
-        return $this->advancedRulesEngine->shouldDisplayChat($currentProduct, $categoryId, [
+        return $this->advancedRulesEngine->shouldDisplayChat(
+            $currentProduct, $categoryId, [
             'page_type' => $this->getCurrentPageType(),
             'page_identifier' => $this->getCurrentPageIdentifier(),
             'request' => $this->getRequest()
-        ]);
+            ]
+        );
     }
 
     /**

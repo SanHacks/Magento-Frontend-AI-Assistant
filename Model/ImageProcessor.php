@@ -49,12 +49,12 @@ class ImageProcessor
     private $logger;
 
     /**
-     * @param ConfigHelper $configHelper
-     * @param Curl $curl
-     * @param Json $json
+     * @param ConfigHelper    $configHelper
+     * @param Curl            $curl
+     * @param Json            $json
      * @param UploaderFactory $uploaderFactory
-     * @param Filesystem $filesystem
-     * @param File $fileDriver
+     * @param Filesystem      $filesystem
+     * @param File            $fileDriver
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -88,9 +88,9 @@ class ImageProcessor
     /**
      * Analyze image with AI to understand content and provide insights
      *
-     * @param string $imageData Base64 encoded image data
-     * @param string $prompt Analysis instructions
-     * @param string $mimeType Image mime type
+     * @param  string $imageData Base64 encoded image data
+     * @param  string $prompt    Analysis instructions
+     * @param  string $mimeType  Image mime type
      * @return array
      */
     public function analyzeImage(string $imageData, string $prompt, string $mimeType = 'image/jpeg'): array
@@ -132,10 +132,12 @@ class ImageProcessor
                 'temperature' => 0.7
             ];
 
-            $this->curl->setHeaders([
+            $this->curl->setHeaders(
+                [
                 'Authorization: Bearer ' . $apiKey,
                 'Content-Type: application/json'
-            ]);
+                ]
+            );
 
             $this->curl->post($url, $this->json->serialize($payload));
             $response = $this->curl->getBody();
@@ -175,20 +177,20 @@ class ImageProcessor
     {
         $provider = $this->configHelper->getImageAiProvider();
         switch ($provider) {
-            case 'gemini':
-                return $this->processWithGemini($imageData, $prompt, $mimeType);
-            case 'dalle':
-            default:
-                return $this->processWithDalle($imageData, $prompt, $mimeType);
+        case 'gemini':
+            return $this->processWithGemini($imageData, $prompt, $mimeType);
+        case 'dalle':
+        default:
+            return $this->processWithDalle($imageData, $prompt, $mimeType);
         }
     }
 
     /**
      * Process image using DALL-E API
      *
-     * @param string $imageData Base64 encoded image data
-     * @param string $prompt Editing instructions
-     * @param string $mimeType Image mime type
+     * @param  string $imageData Base64 encoded image data
+     * @param  string $prompt    Editing instructions
+     * @param  string $mimeType  Image mime type
      * @return array
      */
     private function processWithDalle(string $imageData, string $prompt, string $mimeType): array
@@ -278,9 +280,9 @@ class ImageProcessor
     /**
      * Process image using Gemini API
      *
-     * @param string $imageData Base64 encoded image data
-     * @param string $prompt Editing instructions
-     * @param string $mimeType Image mime type
+     * @param  string $imageData Base64 encoded image data
+     * @param  string $prompt    Editing instructions
+     * @param  string $mimeType  Image mime type
      * @return array
      */
     private function processWithGemini(string $imageData, string $prompt, string $mimeType): array
@@ -333,8 +335,8 @@ class ImageProcessor
     /**
      * Generate image from text prompt
      *
-     * @param string $prompt Image generation prompt
-     * @param array $options Additional options
+     * @param  string $prompt  Image generation prompt
+     * @param  array  $options Additional options
      * @return array
      */
     public function generateImage(string $prompt, array $options = []): array
@@ -365,10 +367,12 @@ class ImageProcessor
                 'response_format' => 'url'
             ];
 
-            $this->curl->setHeaders([
+            $this->curl->setHeaders(
+                [
                 'Authorization: Bearer ' . $apiKey,
                 'Content-Type: application/json'
-            ]);
+                ]
+            );
 
             $this->curl->post($url, $this->json->serialize($payload));
             $response = $this->curl->getBody();
@@ -402,7 +406,7 @@ class ImageProcessor
     /**
      * Enhance analysis prompt for better insights
      *
-     * @param string $prompt Original prompt
+     * @param  string $prompt Original prompt
      * @return string Enhanced prompt
      */
     private function enhanceAnalysisPrompt(string $prompt): string
@@ -410,30 +414,33 @@ class ImageProcessor
         $basePrompt = "You are a professional product analyst and fashion consultant. ";
         
         // Detect if this is a clothing/fashion analysis
-        if (stripos($prompt, 'clothing') !== false || 
-            stripos($prompt, 'dress') !== false || 
-            stripos($prompt, 'fashion') !== false ||
-            stripos($prompt, 'style') !== false ||
-            stripos($prompt, 'wear') !== false ||
-            stripos($prompt, 'outfit') !== false) {
+        if (stripos($prompt, 'clothing') !== false  
+            || stripos($prompt, 'dress') !== false  
+            || stripos($prompt, 'fashion') !== false 
+            || stripos($prompt, 'style') !== false 
+            || stripos($prompt, 'wear') !== false 
+            || stripos($prompt, 'outfit') !== false
+        ) {
             
             $basePrompt .= "Analyze this clothing/fashion item in detail. Consider: style, fit, color, fabric, occasion suitability, body type compatibility, styling suggestions, and how it might look on different people. ";
         }
         
         // Detect if this is a product/item analysis
-        if (stripos($prompt, 'product') !== false || 
-            stripos($prompt, 'item') !== false ||
-            stripos($prompt, 'features') !== false ||
-            stripos($prompt, 'quality') !== false) {
+        if (stripos($prompt, 'product') !== false  
+            || stripos($prompt, 'item') !== false 
+            || stripos($prompt, 'features') !== false 
+            || stripos($prompt, 'quality') !== false
+        ) {
             
             $basePrompt .= "Analyze this product comprehensively. Consider: materials, quality indicators, design features, functionality, value proposition, target audience, and usage scenarios. ";
         }
         
         // Detect if this is a room/space analysis
-        if (stripos($prompt, 'room') !== false || 
-            stripos($prompt, 'space') !== false ||
-            stripos($prompt, 'furniture') !== false ||
-            stripos($prompt, 'decor') !== false) {
+        if (stripos($prompt, 'room') !== false  
+            || stripos($prompt, 'space') !== false 
+            || stripos($prompt, 'furniture') !== false 
+            || stripos($prompt, 'decor') !== false
+        ) {
             
             $basePrompt .= "Analyze this space/room/furniture item. Consider: style, functionality, space utilization, color scheme, design elements, and how it would fit in different interior settings. ";
         }
@@ -444,7 +451,7 @@ class ImageProcessor
     /**
      * Enhance editing prompt for more realistic results
      *
-     * @param string $prompt Original prompt
+     * @param  string $prompt Original prompt
      * @return string Enhanced prompt
      */
     private function enhanceEditingPrompt(string $prompt): string
@@ -452,24 +459,27 @@ class ImageProcessor
         $basePrompt = "Create a highly realistic and professional image edit. ";
         
         // Detect clothing try-on scenarios
-        if (stripos($prompt, 'try on') !== false || 
-            stripos($prompt, 'look on me') !== false ||
-            stripos($prompt, 'wear') !== false ||
-            stripos($prompt, 'fit') !== false) {
+        if (stripos($prompt, 'try on') !== false  
+            || stripos($prompt, 'look on me') !== false 
+            || stripos($prompt, 'wear') !== false 
+            || stripos($prompt, 'fit') !== false
+        ) {
             
             $basePrompt .= "Focus on realistic clothing fit, proper proportions, natural draping, and authentic styling. Consider body proportions, fabric behavior, and realistic shadows and lighting. ";
         }
         
         // Detect color change scenarios
-        if (stripos($prompt, 'color') !== false || 
-            stripos($prompt, 'change') !== false) {
+        if (stripos($prompt, 'color') !== false  
+            || stripos($prompt, 'change') !== false
+        ) {
             
             $basePrompt .= "Maintain the original texture, lighting, and material properties while changing colors. Ensure the new colors look natural and realistic on the material. ";
         }
         
         // Detect room/space mockups
-        if (stripos($prompt, 'room') !== false || 
-            stripos($prompt, 'space') !== false) {
+        if (stripos($prompt, 'room') !== false  
+            || stripos($prompt, 'space') !== false
+        ) {
             
             $basePrompt .= "Create a realistic room setting with proper perspective, lighting, and scale. Consider interior design principles and realistic spatial relationships. ";
         }
@@ -480,8 +490,8 @@ class ImageProcessor
     /**
      * Enhance generation prompt for more realistic results
      *
-     * @param string $prompt Original prompt
-     * @param string $style Style preference
+     * @param  string $prompt Original prompt
+     * @param  string $style  Style preference
      * @return string Enhanced prompt
      */
     private function enhanceGenerationPrompt(string $prompt, string $style = 'realistic'): string
@@ -497,16 +507,18 @@ class ImageProcessor
         }
         
         // Detect lifestyle scenarios
-        if (stripos($prompt, 'lifestyle') !== false || 
-            stripos($prompt, 'professional') !== false ||
-            stripos($prompt, 'setting') !== false) {
+        if (stripos($prompt, 'lifestyle') !== false  
+            || stripos($prompt, 'professional') !== false 
+            || stripos($prompt, 'setting') !== false
+        ) {
             
             $basePrompt .= "Focus on authentic lifestyle photography with natural lighting, realistic environments, and professional composition. ";
         }
         
         // Detect product showcases
-        if (stripos($prompt, 'product') !== false || 
-            stripos($prompt, 'showcase') !== false) {
+        if (stripos($prompt, 'product') !== false  
+            || stripos($prompt, 'showcase') !== false
+        ) {
             
             $basePrompt .= "Create a professional product showcase with optimal lighting, clean composition, and commercial appeal. ";
         }
@@ -517,8 +529,8 @@ class ImageProcessor
     /**
      * Edit existing image with AI
      *
-     * @param string $imagePath Path to the image file
-     * @param string $prompt Editing instructions
+     * @param  string $imagePath Path to the image file
+     * @param  string $prompt    Editing instructions
      * @return array
      */
     private function callImageEditingAPI(string $imagePath, string $prompt): array
@@ -538,9 +550,11 @@ class ImageProcessor
                 'response_format' => 'url'
             ];
 
-            $this->curl->setHeaders([
+            $this->curl->setHeaders(
+                [
                 'Authorization: Bearer ' . $apiKey
-            ]);
+                ]
+            );
 
             // Use curl directly for multipart form data
             $ch = curl_init();
@@ -548,9 +562,11 @@ class ImageProcessor
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            curl_setopt(
+                $ch, CURLOPT_HTTPHEADER, [
                 'Authorization: Bearer ' . $apiKey
-            ]);
+                ]
+            );
 
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -580,8 +596,8 @@ class ImageProcessor
     /**
      * Save processed image to media directory
      *
-     * @param string $imageUrl URL of the processed image
-     * @param string $fileName Desired filename
+     * @param  string $imageUrl URL of the processed image
+     * @param  string $fileName Desired filename
      * @return array
      */
     public function saveProcessedImage(string $imageUrl, string $fileName = null): array
@@ -622,7 +638,7 @@ class ImageProcessor
     /**
      * Get media URL for a given path
      *
-     * @param string $path
+     * @param  string $path
      * @return string
      */
     private function getMediaUrl(string $path): string

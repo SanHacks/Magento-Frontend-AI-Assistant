@@ -42,78 +42,90 @@ class Process implements HttpPostActionInterface
 
         try {
             if (!$this->imageProcessor->isEnabled()) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'Image processing is not enabled'
-                ]);
+                    ]
+                );
             }
 
             if (!$this->configHelper->isGuestAllowed() && !$this->customerSession->isLoggedIn()) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'Please log in to use image processing'
-                ]);
+                    ]
+                );
             }
 
             $action = $this->request->getParam('action', 'edit');
             $prompt = $this->request->getParam('prompt');
 
             if (!$prompt) {
-                return $result->setData([
+                return $result->setData(
+                    [
                     'success' => false,
                     'error' => 'Prompt is required'
-                ]);
+                    ]
+                );
             }
 
             switch ($action) {
-                case 'analyze':
-                    $imageData = $this->request->getParam('image_data');
-                    $mimeType = $this->request->getParam('mime_type', 'image/jpeg');
+            case 'analyze':
+                $imageData = $this->request->getParam('image_data');
+                $mimeType = $this->request->getParam('mime_type', 'image/jpeg');
 
-                    if (!$imageData) {
-                        return $result->setData([
-                            'success' => false,
-                            'error' => 'Image data is required for analysis'
-                        ]);
-                    }
+                if (!$imageData) {
+                    return $result->setData(
+                        [
+                        'success' => false,
+                        'error' => 'Image data is required for analysis'
+                            ]
+                    );
+                }
 
-                    $result_data = $this->imageProcessor->analyzeImage($imageData, $prompt, $mimeType);
-                    break;
+                $result_data = $this->imageProcessor->analyzeImage($imageData, $prompt, $mimeType);
+                break;
 
-                case 'generate':
-                    $options = [
-                        'size' => $this->request->getParam('size', '1024x1024'),
-                        'count' => (int)$this->request->getParam('count', 1),
-                        'style' => $this->request->getParam('style', 'realistic')
-                    ];
+            case 'generate':
+                $options = [
+                    'size' => $this->request->getParam('size', '1024x1024'),
+                    'count' => (int)$this->request->getParam('count', 1),
+                    'style' => $this->request->getParam('style', 'realistic')
+                ];
 
-                    $result_data = $this->imageProcessor->generateImage($prompt, $options);
-                    break;
+                $result_data = $this->imageProcessor->generateImage($prompt, $options);
+                break;
 
-                case 'edit':
-                default:
-                    $imageData = $this->request->getParam('image_data');
-                    $mimeType = $this->request->getParam('mime_type', 'image/jpeg');
+            case 'edit':
+            default:
+                $imageData = $this->request->getParam('image_data');
+                $mimeType = $this->request->getParam('mime_type', 'image/jpeg');
 
-                    if (!$imageData) {
-                        return $result->setData([
-                            'success' => false,
-                            'error' => 'Image data is required for editing'
-                        ]);
-                    }
+                if (!$imageData) {
+                    return $result->setData(
+                        [
+                        'success' => false,
+                        'error' => 'Image data is required for editing'
+                            ]
+                    );
+                }
 
-                    $result_data = $this->imageProcessor->processImage($imageData, $prompt, $mimeType);
-                    break;
+                $result_data = $this->imageProcessor->processImage($imageData, $prompt, $mimeType);
+                break;
             }
 
             return $result->setData($result_data);
 
         } catch (\Exception $e) {
             $this->logger->error('Image processing error: ' . $e->getMessage());
-            return $result->setData([
+            return $result->setData(
+                [
                 'success' => false,
                 'error' => 'An error occurred while processing your request'
-            ]);
+                ]
+            );
         }
     }
 } 

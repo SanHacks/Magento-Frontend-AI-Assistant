@@ -34,7 +34,7 @@ class ModuleTestCreate extends Command
     /**
      * CLI command description.
      *
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @return int
