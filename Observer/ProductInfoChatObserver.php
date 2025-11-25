@@ -26,9 +26,9 @@ class ProductInfoChatObserver implements ObserverInterface
     protected Publish $publish;
 
     /**
-     * @param Logger $logger
+     * @param Logger           $logger
      * @param ProductInfoAgent $productInfoAgent
-     * @param Publish $publish
+     * @param Publish          $publish
      */
     public function __construct(
         Logger $logger,
@@ -47,7 +47,8 @@ class ProductInfoChatObserver implements ObserverInterface
     {
         try {
             $chatData = $observer->getEvent()->getData('productInfoResponse');
-            $this->publish->publish($chatData);
+            // Disabled RabbitMQ publishing to avoid connection errors
+            // $this->publish->publish($chatData);
             $this->processConverseData($chatData);
 
         } catch (\Exception $e) {
@@ -57,7 +58,7 @@ class ProductInfoChatObserver implements ObserverInterface
     }
 
     /**
-     * @param $response
+     * @param  $response
      * @return string
      */
     public function fullResponse($response): string
@@ -72,7 +73,7 @@ class ProductInfoChatObserver implements ObserverInterface
     }
 
     /**
-     * @param mixed $chatData
+     * @param  mixed $chatData
      * @return void
      * @throws \Exception
      */

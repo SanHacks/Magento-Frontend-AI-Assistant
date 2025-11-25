@@ -32,10 +32,10 @@ class Voice implements VoiceInterface
     private DateTime $dateTime;
 
     /**
-     * @param Data $configHelper
-     * @param Logger $logger
+     * @param Data            $configHelper
+     * @param Logger          $logger
      * @param CustomerSession $session
-     * @param DateTime $dateTime
+     * @param DateTime        $dateTime
      */
     public function __construct(
         Data $configHelper,
@@ -50,9 +50,9 @@ class Voice implements VoiceInterface
     }
 
     /**
-     * @param string $text
-     * @param int|null $productId
-     * @param string|null $sessionId
+     * @param  string      $text
+     * @param  int|null    $productId
+     * @param  string|null $sessionId
      * @return array
      */
     public function generateVoice(string $text, int $productId = null, string $sessionId = null): array
@@ -120,16 +120,17 @@ class Voice implements VoiceInterface
     /**
      * Call Deepgram API to generate voice
      *
-     * @param string $text
-     * @param string $model
-     * @param string $apiKey
+     * @param  string $text
+     * @param  string $model
+     * @param  string $apiKey
      * @return string|false
      */
     private function callDeepgramApi(string $text, string $model, string $apiKey)
     {
         $curl = curl_init();
 
-        curl_setopt_array($curl, [
+        curl_setopt_array(
+            $curl, [
             CURLOPT_URL => "https://api.deepgram.com/v1/speak?model={$model}",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
@@ -143,7 +144,8 @@ class Voice implements VoiceInterface
                 'Authorization: Token ' . $apiKey,
                 'Content-Type: text/plain'
             ],
-        ]);
+            ]
+        );
 
         $response = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -166,9 +168,9 @@ class Voice implements VoiceInterface
     /**
      * Generate cache key for voice data
      *
-     * @param string $text
-     * @param int|null $productId
-     * @param string|null $sessionId
+     * @param  string      $text
+     * @param  int|null    $productId
+     * @param  string|null $sessionId
      * @return string
      */
     private function generateCacheKey(string $text, ?int $productId, ?string $sessionId): string
@@ -180,7 +182,7 @@ class Voice implements VoiceInterface
     /**
      * Get cached voice data
      *
-     * @param string $cacheKey
+     * @param  string $cacheKey
      * @return string|null
      */
     private function getCachedVoice(string $cacheKey): ?string
@@ -207,8 +209,8 @@ class Voice implements VoiceInterface
     /**
      * Cache voice data in session
      *
-     * @param string $cacheKey
-     * @param string $audioData
+     * @param  string $cacheKey
+     * @param  string $audioData
      * @return void
      */
     private function cacheVoice(string $cacheKey, string $audioData): void

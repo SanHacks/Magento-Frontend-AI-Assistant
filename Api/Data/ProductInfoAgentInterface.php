@@ -19,7 +19,7 @@ interface ProductInfoAgentInterface
     public function getChatId(): ?int;
 
     /**
-     * @param int|null $chatId
+     * @param  int|null $chatId
      * @return $this
      */
     public function setChatId(?int $chatId);
@@ -35,7 +35,7 @@ interface ProductInfoAgentInterface
     /**
      * Setter for Message.
      *
-     * @param string|null $message
+     * @param  string|null $message
      * @return $this
      */
     public function setMessage(?string $message): self;
@@ -50,7 +50,7 @@ interface ProductInfoAgentInterface
     /**
      * Setter for UpdatedAt.
      *
-     * @param string|null $updatedAt
+     * @param  string|null $updatedAt
      * @return $this
      */
     public function setUpdatedAt(?string $updatedAt): self;
@@ -65,7 +65,7 @@ interface ProductInfoAgentInterface
     /**
      * Setter for CreatedAt.
      *
-     * @param string|null $createdAt
+     * @param  string|null $createdAt
      * @return $this
      */
     public function setCreatedAt(?string $createdAt): self;
@@ -80,7 +80,7 @@ interface ProductInfoAgentInterface
     /**
      * Setter for UserId.
      *
-     * @param int|null $userId
+     * @param  int|null $userId
      * @return $this
      */
     public function setUserId(?int $userId): self;
@@ -95,13 +95,13 @@ interface ProductInfoAgentInterface
     /**
      * Setter for Model.
      *
-     * @param string|null $model
+     * @param  string|null $model
      * @return $this
      */
     public function setModel(?string $model): self;
 
     /**
-     * @param string|null $data
+     * @param  string|null $data
      * @return mixed
      */
     public function setDataCollection(?string $data):self;
@@ -112,7 +112,7 @@ interface ProductInfoAgentInterface
     public function getDataCollection(): ?string;
 
     /**
-     * @param int|null $product
+     * @param  int|null $product
      * @return self
      */
     public function setProductId(?int $product):self;

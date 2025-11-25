@@ -5,9 +5,9 @@ namespace Gundo\ProductInfoAgent\Api\Data;
 class LargeLanguageModelApi extends BaseLLMApi
 {
     /**
-     * @param string $message
-     * @param array|null $productData
-     * @param string $model
+     * @param  string     $message
+     * @param  array|null $productData
+     * @param  string     $model
      * @return array
      */
     public function callModel(string $message,array $productData = null, string $model = ""): array

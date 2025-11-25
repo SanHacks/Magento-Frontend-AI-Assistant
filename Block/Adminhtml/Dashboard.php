@@ -15,9 +15,9 @@ class Dashboard extends Template
     private $collectionFactory;
 
     /**
-     * @param Context $context
+     * @param Context           $context
      * @param CollectionFactory $collectionFactory
-     * @param array $data
+     * @param array             $data
      */
     public function __construct(
         Context $context,
@@ -128,10 +128,12 @@ class Dashboard extends Template
         $connection = $collection->getConnection();
         
         $select = $connection->select()
-            ->from($collection->getMainTable(), [
+            ->from(
+                $collection->getMainTable(), [
                 'date' => 'DATE(created_at)',
                 'count' => 'COUNT(*)'
-            ])
+                ]
+            )
             ->where('created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)')
             ->group('DATE(created_at)')
             ->order('date ASC');

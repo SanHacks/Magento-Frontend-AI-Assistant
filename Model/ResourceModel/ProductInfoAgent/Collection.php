@@ -29,7 +29,7 @@ class Collection extends AbstractCollection
     /**
      * Retrieve an item by its ID.
      *
-     * @param int $id
+     * @param  int $id
      * @return DataObject|null
      */
     public function getById(int $id): ?DataObject

@@ -90,16 +90,16 @@ class Suggestion implements SuggestionInterface
     /**
      * Get or create suggestions for a product
      *
-     * @param int $productId
+     * @param  int $productId
      * @return array
      */
     private function getOrCreateSuggestions(int $productId): array
     {
         $collection = $this->collectionFactory->create();
         $collection->addFieldToFilter('product_id', $productId)
-                   ->addFieldToFilter('is_active', 1)
-                   ->setOrder('priority', 'ASC')
-                   ->setOrder('created_at', 'DESC');
+            ->addFieldToFilter('is_active', 1)
+            ->setOrder('priority', 'ASC')
+            ->setOrder('created_at', 'DESC');
 
         $cacheLifetime = $this->helperData->getSuggestionsCacheLifetime();
 
@@ -136,7 +136,7 @@ class Suggestion implements SuggestionInterface
     /**
      * Generate new suggestions for a product
      *
-     * @param int $productId
+     * @param  int $productId
      * @return array
      */
     private function generateNewSuggestions(int $productId): array
@@ -186,12 +186,14 @@ class Suggestion implements SuggestionInterface
         $savedSuggestions = [];
         foreach ($allQuestions as $questionData) {
             $suggestionModel = $this->suggestionFactory->create();
-            $suggestionModel->setData([
+            $suggestionModel->setData(
+                [
                 'product_id' => $productId,
                 'question' => $questionData['question'],
                 'priority' => $questionData['priority'],
                 'is_active' => 1
-            ]);
+                ]
+            );
             
             try {
                 $this->suggestionResourceModel->save($suggestionModel);
@@ -212,8 +214,8 @@ class Suggestion implements SuggestionInterface
     /**
      * Apply smart rotation based on user's viewed suggestions
      *
-     * @param int $productId
-     * @param array $suggestions
+     * @param  int   $productId
+     * @param  array $suggestions
      * @return array
      */
     private function applySmartRotation(int $productId, array $suggestions): array
@@ -229,7 +231,7 @@ class Suggestion implements SuggestionInterface
             $viewCollection->addFieldToFilter('customer_id', $customerId);
         } else {
             $viewCollection->addFieldToFilter('session_id', $sessionId)
-                          ->addFieldToFilter('customer_id', ['null' => true]);
+                ->addFieldToFilter('customer_id', ['null' => true]);
         }
 
         $viewedSuggestionIds = [];
@@ -266,7 +268,7 @@ class Suggestion implements SuggestionInterface
     /**
      * Randomize suggestions array
      *
-     * @param array $suggestions
+     * @param  array $suggestions
      * @return array
      */
     private function randomizeSuggestions(array $suggestions): array
@@ -286,8 +288,8 @@ class Suggestion implements SuggestionInterface
     /**
      * Track viewed suggestions for the user/session
      *
-     * @param int $productId
-     * @param array $suggestions
+     * @param  int   $productId
+     * @param  array $suggestions
      * @return void
      */
     private function trackViewedSuggestions(int $productId, array $suggestions): void
@@ -308,7 +310,7 @@ class Suggestion implements SuggestionInterface
             $viewCollection->addFieldToFilter('customer_id', $customerId);
         } else {
             $viewCollection->addFieldToFilter('session_id', $sessionId)
-                          ->addFieldToFilter('customer_id', ['null' => true]);
+                ->addFieldToFilter('customer_id', ['null' => true]);
         }
 
         $viewRecord = $viewCollection->getFirstItem();
@@ -337,9 +339,9 @@ class Suggestion implements SuggestionInterface
     /**
      * Reset viewed suggestions for fresh rotation
      *
-     * @param int $productId
-     * @param int|null $customerId
-     * @param string $sessionId
+     * @param  int      $productId
+     * @param  int|null $customerId
+     * @param  string   $sessionId
      * @return void
      */
     private function resetViewedSuggestions(int $productId, ?int $customerId, string $sessionId): void
@@ -351,7 +353,7 @@ class Suggestion implements SuggestionInterface
             $viewCollection->addFieldToFilter('customer_id', $customerId);
         } else {
             $viewCollection->addFieldToFilter('session_id', $sessionId)
-                          ->addFieldToFilter('customer_id', ['null' => true]);
+                ->addFieldToFilter('customer_id', ['null' => true]);
         }
 
         foreach ($viewCollection as $viewRecord) {

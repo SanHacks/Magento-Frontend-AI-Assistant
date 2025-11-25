@@ -124,9 +124,9 @@ class TestVoice extends Command
     /**
      * Play audio file using available system players
      *
-     * @param string $audioFile
-     * @param string $preferredPlayer
-     * @param OutputInterface $output
+     * @param  string          $audioFile
+     * @param  string          $preferredPlayer
+     * @param  OutputInterface $output
      * @return bool
      */
     private function playAudio(string $audioFile, string $preferredPlayer, OutputInterface $output): bool
@@ -189,7 +189,7 @@ class TestVoice extends Command
     /**
      * Check if a command exists
      *
-     * @param string $command
+     * @param  string $command
      * @return bool
      */
     private function commandExists(string $command): bool
@@ -201,9 +201,9 @@ class TestVoice extends Command
     /**
      * Execute audio player command
      *
-     * @param string $playerCommand
-     * @param string $audioFile
-     * @param OutputInterface $output
+     * @param  string          $playerCommand
+     * @param  string          $audioFile
+     * @param  OutputInterface $output
      * @return bool
      */
     private function executeAudioPlayer(string $playerCommand, string $audioFile, OutputInterface $output): bool

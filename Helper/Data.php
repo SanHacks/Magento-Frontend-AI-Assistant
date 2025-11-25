@@ -56,6 +56,7 @@ class Data extends AbstractHelper
     const XML_PATH_VOICE_CACHE_LIFETIME = 'productinfoagent/voice/cache_lifetime';
     const XML_PATH_GUEST_ALLOWED = 'productinfoagent/general/allow_guests';
     const XML_PATH_SYSTEM_PROMPT = 'productinfoagent/general/system_prompt';
+    const XML_PATH_SUGGESTIONS_CACHE_LIFETIME = 'productinfoagent/suggestions/cache_lifetime';
 
     /**
      * Constructor
@@ -539,5 +540,18 @@ class Data extends AbstractHelper
             self::XML_PATH_SYSTEM_PROMPT,
             ScopeInterface::SCOPE_STORE
         ) ?? 'You are a helpful AI assistant for product information.';
+    }
+
+    /**
+     * Get suggestions cache lifetime
+     *
+     * @return int
+     */
+    public function getSuggestionsCacheLifetime(): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_SUGGESTIONS_CACHE_LIFETIME,
+            ScopeInterface::SCOPE_STORE
+        ) ?? 3600; // Default 1 hour
     }
 }

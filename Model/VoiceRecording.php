@@ -30,9 +30,9 @@ class VoiceRecording
     private $logger;
 
     /**
-     * @param Curl $curl
-     * @param Json $json
-     * @param ConfigHelper $configHelper
+     * @param Curl            $curl
+     * @param Json            $json
+     * @param ConfigHelper    $configHelper
      * @param LoggerInterface $logger
      */
     public function __construct(
@@ -50,8 +50,8 @@ class VoiceRecording
     /**
      * Convert speech to text using Deepgram API
      *
-     * @param string $audioData Base64 encoded audio data
-     * @param string $mimeType Audio mime type
+     * @param  string $audioData Base64 encoded audio data
+     * @param  string $mimeType  Audio mime type
      * @return array
      */
     public function speechToText(string $audioData, string $mimeType = 'audio/wav'): array
@@ -71,10 +71,12 @@ class VoiceRecording
             // Prepare API request
             $url = 'https://api.deepgram.com/v1/listen?smart_format=true&language=en&model=nova-2';
             
-            $this->curl->setHeaders([
+            $this->curl->setHeaders(
+                [
                 'Authorization: Token ' . $apiKey,
                 'Content-Type: ' . $mimeType
-            ]);
+                ]
+            );
 
             $this->curl->post($url, $audioContent);
             $response = $this->curl->getBody();
@@ -112,7 +114,7 @@ class VoiceRecording
     /**
      * Convert audio file URL to text
      *
-     * @param string $audioUrl URL to audio file
+     * @param  string $audioUrl URL to audio file
      * @return array
      */
     public function speechToTextFromUrl(string $audioUrl): array
@@ -127,10 +129,12 @@ class VoiceRecording
             
             $payload = $this->json->serialize(['url' => $audioUrl]);
 
-            $this->curl->setHeaders([
+            $this->curl->setHeaders(
+                [
                 'Authorization: Token ' . $apiKey,
                 'Content-Type: application/json'
-            ]);
+                ]
+            );
 
             $this->curl->post($url, $payload);
             $response = $this->curl->getBody();

@@ -43,7 +43,7 @@ class AgentMessage implements ResolverInterface
                     'message' => 'Sorry, there was an error processing your request.',
                     'chat_id' => null,
                     'model' => 'error_handler'
-                ];
+                 ];
             }
 
             return [

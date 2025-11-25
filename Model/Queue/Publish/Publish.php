@@ -26,8 +26,8 @@ class Publish
 
     /**
      * @param PublisherInterface $publisher
-     * @param Json $serializer
-     * @param Logger $logger
+     * @param Json               $serializer
+     * @param Logger             $logger
      */
     public function __construct(
         PublisherInterface $publisher,
@@ -40,7 +40,7 @@ class Publish
     }
 
     /**
-     * @param $data
+     * @param  $data
      * @return void
      */
     public function publish($data): void

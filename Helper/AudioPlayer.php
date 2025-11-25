@@ -22,9 +22,9 @@ class AudioPlayer extends AbstractHelper
     private Logger $logger;
 
     /**
-     * @param Context $context
+     * @param Context       $context
      * @param DirectoryList $directoryList
-     * @param Logger $logger
+     * @param Logger        $logger
      */
     public function __construct(
         Context $context,
@@ -39,8 +39,8 @@ class AudioPlayer extends AbstractHelper
     /**
      * Save audio data to file
      *
-     * @param string $audioData Base64 encoded audio data
-     * @param string|null $filename Custom filename (optional)
+     * @param  string      $audioData Base64 encoded audio data
+     * @param  string|null $filename  Custom filename (optional)
      * @return array ['success' => bool, 'filepath' => string, 'error' => string]
      */
     public function saveAudioFile(string $audioData, ?string $filename = null): array
@@ -102,8 +102,8 @@ class AudioPlayer extends AbstractHelper
     /**
      * Play audio file using available system players
      *
-     * @param string $audioFile Path to audio file
-     * @param string $preferredPlayer Preferred audio player (auto|ffplay|aplay|paplay|mpv|vlc)
+     * @param  string $audioFile       Path to audio file
+     * @param  string $preferredPlayer Preferred audio player (auto|ffplay|aplay|paplay|mpv|vlc)
      * @return array ['success' => bool, 'player' => string, 'error' => string]
      */
     public function playAudioFile(string $audioFile, string $preferredPlayer = 'auto'): array
@@ -202,7 +202,7 @@ class AudioPlayer extends AbstractHelper
     /**
      * Check if a command exists
      *
-     * @param string $command
+     * @param  string $command
      * @return bool
      */
     private function commandExists(string $command): bool
@@ -214,8 +214,8 @@ class AudioPlayer extends AbstractHelper
     /**
      * Execute audio player command
      *
-     * @param string $playerCommand
-     * @param string $audioFile
+     * @param  string $playerCommand
+     * @param  string $audioFile
      * @return bool
      */
     private function executeAudioPlayer(string $playerCommand, string $audioFile): bool
@@ -243,7 +243,7 @@ class AudioPlayer extends AbstractHelper
     /**
      * Clean up temporary audio files
      *
-     * @param int $olderThanHours Remove files older than specified hours (default: 24)
+     * @param  int $olderThanHours Remove files older than specified hours (default: 24)
      * @return int Number of files removed
      */
     public function cleanupTempAudioFiles(int $olderThanHours = 24): int
@@ -279,7 +279,7 @@ class AudioPlayer extends AbstractHelper
     /**
      * Get audio file info
      *
-     * @param string $audioFile
+     * @param  string $audioFile
      * @return array
      */
     public function getAudioInfo(string $audioFile): array
@@ -325,7 +325,7 @@ class AudioPlayer extends AbstractHelper
     /**
      * Format bytes to human readable format
      *
-     * @param int $size
+     * @param  int $size
      * @return string
      */
     private function formatBytes(int $size): string

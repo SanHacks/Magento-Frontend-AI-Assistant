@@ -43,14 +43,14 @@ class Chat implements ChatInterface
     private RemoteAddress $remoteAddress;
 
     /**
-     * @param Logger $logger
-     * @param LargeLanguageModelApi $api
+     * @param Logger                     $logger
+     * @param LargeLanguageModelApi      $api
      * @param ProductRepositoryInterface $productRepository
-     * @param ProductInfoAgentFactory $productInfoAgentFactory
-     * @param EventManager $eventManager
-     * @param DateTime $date
-     * @param RequestInterface $request
-     * @param RemoteAddress $remoteAddress
+     * @param ProductInfoAgentFactory    $productInfoAgentFactory
+     * @param EventManager               $eventManager
+     * @param DateTime                   $date
+     * @param RequestInterface           $request
+     * @param RemoteAddress              $remoteAddress
      */
     public function __construct(
         Logger                     $logger,
@@ -73,10 +73,10 @@ class Chat implements ChatInterface
     }
 
     /**
-     * @param string $message
-     * @param int|null $productId
-     * @param int|null $customerId
-     * @param string|null $sessionId
+     * @param  string      $message
+     * @param  int|null    $productId
+     * @param  int|null    $customerId
+     * @param  string|null $sessionId
      * @return array
      */
     public function sendMessage(string $message, int $productId = null, int $customerId = null, string $sessionId = null): array
@@ -117,7 +117,7 @@ class Chat implements ChatInterface
     }
 
     /**
-     * @param mixed $chatData
+     * @param  mixed $chatData
      * @return void
      */
     public function processConverseData(array $chatData): int
@@ -144,7 +144,7 @@ class Chat implements ChatInterface
     }
 
     /**
-     * @param $productId
+     * @param  $productId
      * @return array[]
      * @throws NoSuchEntityException
      */
